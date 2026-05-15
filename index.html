@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SISTEMA DE IMPRESSÃO DE PEDIDOS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.js"></script>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+}
+
+/* LOGIN */
+
+#loginTela{
+
+  width:100%;
+  height:100vh;
+
+  display:flex;
+
+  justify-content:center;
+  align-items:center;
+
+}
+
+.login-box{
+
+  width:350px;
+
+  background:#1e293b;
+
+  padding:30px;
+
+  border-radius:15px;
+
+}
+
+.login-box h1{
+
+  text-align:center;
+
+  margin-bottom:20px;
+
+}
+
+.login-box input{
+
+  width:100%;
+
+  padding:14px;
+
+  margin-bottom:15px;
+
+  border:none;
+
+  border-radius:8px;
+
+}
+
+.login-box button{
+
+  width:100%;
+
+  padding:14px;
+
+  border:none;
+
+  border-radius:8px;
+
+  background:#4338ca;
+
+  color:white;
+
+  cursor:pointer;
+
+  font-size:16px;
+
+}
+
+/* SISTEMA */
+
+#painel{
+  display:none;
+}
+
+.menu{
+
+  width:260px;
+
+  height:100vh;
+
+  background:#1e293b;
+
+  position:fixed;
+
+  left:0;
+
+  top:0;
+
+  padding-top:20px;
+
+}
+
+.logo{
+
+  text-align:center;
+
+  font-size:24px;
+
+  font-weight:bold;
+
+  margin-bottom:40px;
+
+}
+
+.menu button{
+
+  width:100%;
+
+  padding:18px;
+
+  border:none;
+
+  background:none;
+
+  color:white;
+
+  text-align:left;
+
+  cursor:pointer;
+
+  font-size:18px;
+
+}
+
+.menu button:hover{
+
+  background:#334155;
+
+}
+
+.conteudo{
+
+  margin-left:260px;
+
+  padding:20px;
+
+}
+
+.tela{
+  display:none;
+}
+
+.tela.ativa{
+  display:block;
+}
+
+/* DASHBOARD */
+
+.dashboard{
+
+  display:grid;
+
+  grid-template-columns:
+  repeat(auto-fit,minmax(220px,1fr));
+
+  gap:20px;
+
+}
+
+.card-dashboard{
+
+  background:#1e293b;
+
+  padding:25px;
+
+  border-radius:15px;
+
+  border-left:8px solid #22c55e;
+
+}
+
+.card-dashboard h2{
+
+  margin-bottom:10px;
+
+}
+
+.card-dashboard span{
+
+  font-size:32px;
+
+  font-weight:bold;
+
+  color:#22c55e;
+
+}
+
+canvas{
+
+  background:white;
+
+  border-radius:15px;
+
+  margin-top:20px;
+
+  padding:20px;
+
+}
+
+/* PEDIDOS */
+
+#pedidosPendentes,
+#pedidosAtendidos{
+
+  display:grid;
+
+  grid-template-columns:
+  repeat(auto-fill,minmax(350px,1fr));
+
+  gap:20px;
+
+  margin-top:20px;
+
+}
+
+.card{
+
+  background:#1e293b;
+
+  padding:20px;
+
+  border-radius:15px;
+
+  border-left:8px solid #22c55e;
+
+}
+
+.card.atendido{
+
+  border-left:8px solid red;
+
+  background:#3b1111;
+
+}
+
+.card h2{
+
+  margin-bottom:15px;
+
+}
+
+.info{
+
+  margin:8px 0;
+
+  font-size:17px;
+
+}
+
+.totalPedido{
+
+  margin-top:15px;
+
+  font-size:22px;
+
+  color:#22c55e;
+
+  font-weight:bold;
+
+}
+
+.btn{
+
+  width:100%;
+
+  padding:15px;
+
+  margin-top:20px;
+
+  border:none;
+
+  border-radius:8px;
+
+  background:#4338ca;
+
+  color:white;
+
+  font-size:16px;
+
+  cursor:pointer;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<div id="loginTela">
+
+  <div class="login-box">
+
+    <h1>🖨️ SISTEMA DE IMPRESSÃO DE PEDIDOS</h1>
+
+    <input
+    type="text"
+    id="usuario"
+    placeholder="Usuário">
+
+    <input
+    type="password"
+    id="senha"
+    placeholder="Senha">
+
+    <button onclick="login()">
+      ENTRAR
+    </button>
+
+  </div>
+
+</div>
+
+<!-- SISTEMA -->
+
+<div id="painel">
+
+  <!-- MENU -->
+
+  <div class="menu">
+
+    <div class="logo">
+
+      🖨️ PEDIDOS
+
+    </div>
+
+    <button onclick="abrirTela('dashboard')">
+
+      📊 Dashboard
+
+    </button>
+
+    <button onclick="abrirTela('pendentes')">
+
+      📦 Pedidos a Atender
+
+    </button>
+
+    <button onclick="abrirTela('atendidos')">
+
+      ✅ Pedidos Atendidos
+
+    </button>
+
+  </div>
+
+  <!-- CONTEUDO -->
+
+  <div class="conteudo">
+
+    <!-- DASHBOARD -->
+
+    <div id="dashboard" class="tela ativa">
+
+      <h1>Dashboard</h1>
+
+      <br>
+
+      <div class="dashboard">
+
+        <div class="card-dashboard">
+
+          <h2>Vendas Hoje</h2>
+
+          <span id="totalHoje">
+            R$ 0,00
+          </span>
+
+        </div>
+
+        <div class="card-dashboard">
+
+          <h2>Vendas Semana</h2>
+
+          <span id="totalSemana">
+            R$ 0,00
+          </span>
+
+        </div>
+
+        <div class="card-dashboard">
+
+          <h2>Vendas Mês</h2>
+
+          <span id="totalMes">
+            R$ 0,00
+          </span>
+
+        </div>
+
+      </div>
+
+      <canvas id="graficoPedidos"></canvas>
+
+    </div>
+
+    <!-- PEDIDOS -->
+
+    <div id="pendentes" class="tela">
+
+      <h1>Pedidos a Atender</h1>
+
+      <div id="pedidosPendentes"></div>
+
+    </div>
+
+    <!-- ATENDIDOS -->
+
+    <div id="atendidos" class="tela">
+
+      <h1>Pedidos Atendidos</h1>
+
+      <div id="pedidosAtendidos"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+/* LOGIN */
+
+function login(){
+
+  const usuario =
+  document.getElementById("usuario").value;
+
+  const senha =
+  document.getElementById("senha").value;
+
+  if(
+    usuario === "admin"
+    &&
+    senha === "123456"
+  ){
+
+    document.getElementById(
+      "loginTela"
+    ).style.display = "none";
+
+    document.getElementById(
+      "painel"
+    ).style.display = "block";
+
+    carregarDashboard();
+
+    carregarPedidos();
+
+  }
+  else{
+
+    alert("Usuário ou senha inválidos");
+
+  }
+
+}
+
+/* MENU */
+
+function abrirTela(id){
+
+  document
+  .querySelectorAll(".tela")
+  .forEach(t => {
+
+    t.classList.remove("ativa");
+
+  });
+
+  document
+  .getElementById(id)
+  .classList.add("ativa");
+
+}
+
+/* SUPABASE */
+
+const SUPABASE_URL =
+"https://iwvyptljwwdqmpixgpyc.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_UwCk5xuRDMSfXnzZjbMNvw_u_QaXulQ";
+
+const supabaseClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+/* CALCULAR VALOR */
+
+function calcularValor(pedido){
+
+  let total = 0;
+
+  if(
+    pedido.tamanho &&
+    pedido.tamanho.includes("270")
+  ){
+    total += 19.75;
+  }
+
+  if(
+    pedido.tamanho &&
+    pedido.tamanho.includes("350")
+  ){
+    total += 21.75;
+  }
+
+  if(
+    pedido.mix_talher &&
+    pedido.mix_talher.toUpperCase()
+    .includes("SIM")
+  ){
+    total += 0.75;
+  }
+
+  if(
+    pedido.sobremesa &&
+    !pedido.sobremesa.toUpperCase()
+    .includes("SEM")
+  ){
+    total += 6.50;
+  }
+
+  if(
+    pedido.bebida &&
+    !pedido.bebida.toUpperCase()
+    .includes("SEM")
+  ){
+    total += 6.50;
+  }
+
+  return total;
+
+}
+
+/* DASHBOARD */
+
+async function carregarDashboard(){
+
+  const { data } =
+  await supabaseClient
+  .from("pedidos")
+  .select("*");
+
+  let hoje = 0;
+  let semana = 0;
+  let mes = 0;
+
+  const dias = {
+    "Dom":0,
+    "Seg":0,
+    "Ter":0,
+    "Qua":0,
+    "Qui":0,
+    "Sex":0,
+    "Sab":0
+  };
+
+  const agora = new Date();
+
+  data.forEach(pedido => {
+
+    if(pedido.status !== "impresso"){
+      return;
+    }
+
+    const valor =
+    calcularValor(pedido);
+
+    const dataPedido =
+    new Date(pedido.criado_em);
+
+    const diff =
+    (agora - dataPedido)
+    / (1000 * 60 * 60 * 24);
+
+    if(
+      dataPedido.toDateString()
+      ===
+      agora.toDateString()
+    ){
+      hoje += valor;
+    }
+
+    if(diff <= 7){
+      semana += valor;
+    }
+
+    if(
+      dataPedido.getMonth()
+      ===
+      agora.getMonth()
+    ){
+      mes += valor;
+    }
+
+    const nomes = [
+      "Dom","Seg","Ter",
+      "Qua","Qui","Sex","Sab"
+    ];
+
+    dias[
+      nomes[dataPedido.getDay()]
+    ]++;
+
+  });
+
+  document.getElementById(
+    "totalHoje"
+  ).innerText =
+  "R$ " + hoje.toFixed(2);
+
+  document.getElementById(
+    "totalSemana"
+  ).innerText =
+  "R$ " + semana.toFixed(2);
+
+  document.getElementById(
+    "totalMes"
+  ).innerText =
+  "R$ " + mes.toFixed(2);
+
+  criarGrafico(dias);
+
+}
+
+/* GRAFICO */
+
+let grafico;
+
+function criarGrafico(dados){
+
+  const ctx =
+  document.getElementById(
+    "graficoPedidos"
+  );
+
+  if(grafico){
+    grafico.destroy();
+  }
+
+  grafico = new Chart(ctx, {
+
+    type:"bar",
+
+    data:{
+
+      labels:Object.keys(dados),
+
+      datasets:[{
+
+        label:"Pedidos Impressos",
+
+        data:Object.values(dados)
+
+      }]
+
+    }
+
+  });
+
+}
+
+/* PEDIDOS */
+
+async function carregarPedidos(){
+
+  const { data } =
+  await supabaseClient
+  .from("pedidos")
+  .select("*")
+  .order("id", {
+    ascending:false
+  });
+
+  const pendentes =
+  document.getElementById(
+    "pedidosPendentes"
+  );
+
+  const atendidos =
+  document.getElementById(
+    "pedidosAtendidos"
+  );
+
+  pendentes.innerHTML = "";
+  atendidos.innerHTML = "";
+
+  data.forEach(pedido => {
+
+    const valor =
+    calcularValor(pedido);
+
+    const card = `
+
+    <div class="card ${pedido.status === 'impresso' ? 'atendido' : ''}">
+
+      <h2>${pedido.nome || ""}</h2>
+
+      <div class="info">
+      📍 ${pedido.local_entrega || ""}
+      </div>
+
+      <div class="info">
+      🍱 ${pedido.tamanho || ""}
+      </div>
+
+      <div class="info">
+      🍖 ${pedido.proteina || ""}
+      </div>
+
+      <div class="info">
+      🥗 ${pedido.guarnicoes || ""}
+      </div>
+
+      <div class="info">
+      🥤 ${pedido.bebida || ""}
+      </div>
+
+      <div class="info">
+      💳 ${pedido.forma_pagamento || ""}
+      </div>
+
+      <div class="info">
+      📦 ${pedido.endereco || ""}
+      </div>
+
+      <div class="totalPedido">
+
+      💰 TOTAL: R$ ${valor.toFixed(2)}
+
+      </div>
+
+      ${
+        pedido.status !== "impresso"
+        ?
+
+        `
+
+        <button
+        class="btn"
+        onclick="imprimirPedido(${pedido.id})">
+
+        ✅ ATENDER E IMPRIMIR
+
+        </button>
+
+        `
+
+        :
+
+        ""
+
+      }
+
+    </div>
+
+    `;
+
+    if(pedido.status === "impresso"){
+
+      atendidos.innerHTML += card;
+
+    }
+    else{
+
+      pendentes.innerHTML += card;
+
+    }
+
+  });
+
+}
+
+/* SOM */
+
+function tocarSom(){
+
+  const audio =
+  new Audio(
+  "https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"
+  );
+
+  audio.play();
+
+}
+
+/* IMPRIMIR */
+
+async function imprimirPedido(id){
+
+  const { data } =
+  await supabaseClient
+  .from("pedidos")
+  .select("*")
+  .eq("id", id)
+  .single();
+
+  const total =
+  calcularValor(data);
+
+  const html = `
+
+  <html>
+
+  <head>
+
+  <style>
+
+  @media print {
+
+    @page{
+      size:80mm auto;
+      margin:0;
+    }
+
+    body{
+      width:80mm;
+    }
+
+  }
+
+  body{
+
+    width:80mm;
+
+    font-family:monospace;
+
+    padding:5px;
+
+    font-size:14px;
+
+  }
+
+  h2{
+    text-align:center;
+  }
+
+  hr{
+
+    border:none;
+
+    border-top:1px dashed black;
+
+    margin:10px 0;
+
+  }
+
+  .total{
+
+    text-align:center;
+
+    font-size:24px;
+
+    font-weight:bold;
+
+    margin-top:20px;
+
+  }
+
+  </style>
+
+  </head>
+
+  <body>
+
+  <h2>
+  SISTEMA DE IMPRESSÃO DE PEDIDOS
+  </h2>
+
+  <hr>
+
+  CLIENTE:<br>
+  ${data.nome}<br><br>
+
+  LOCAL:<br>
+  ${data.local_entrega}<br><br>
+
+  TAMANHO:<br>
+  ${data.tamanho}<br><br>
+
+  PROTEÍNA:<br>
+  ${data.proteina}<br><br>
+
+  GUARNIÇÕES:<br>
+  ${data.guarnicoes}<br><br>
+
+  MOLHO:<br>
+  ${data.molho}<br><br>
+
+  SOBREMESA:<br>
+  ${data.sobremesa}<br><br>
+
+  BEBIDA:<br>
+  ${data.bebida}<br><br>
+
+  PAGAMENTO:<br>
+  ${data.forma_pagamento}<br><br>
+
+  ENDEREÇO:<br>
+  ${data.endereco}<br><br>
+
+  <hr>
+
+  <div class="total">
+
+  TOTAL<br>
+
+  R$ ${total.toFixed(2)}
+
+  </div>
+
+  <hr>
+
+  PEDIDO Nº ${data.id}
+
+  <script>
+
+  window.onload = function(){
+
+    window.print();
+
+    window.onafterprint = function(){
+
+      window.close();
+
+    }
+
+  }
+
+  <\/script>
+
+  </body>
+
+  </html>
+
+  `;
+
+  const janela =
+  window.open(
+    "",
+    "",
+    "width=400,height=600"
+  );
+
+  janela.document.write(html);
+
+  janela.document.close();
+
+  await supabaseClient
+  .from("pedidos")
+  .update({
+    status:"impresso"
+  })
+  .eq("id", id);
+
+  carregarPedidos();
+
+  carregarDashboard();
+
+}
+
+/* REALTIME */
+
+supabaseClient
+.channel("pedidos")
+.on(
+  "postgres_changes",
+  {
+    event:"INSERT",
+    schema:"public",
+    table:"pedidos"
+  },
+
+  payload => {
+
+    tocarSom();
+
+    carregarPedidos();
+
+    carregarDashboard();
+
+    alert("NOVO PEDIDO RECEBIDO!");
+
+  }
+)
+.subscribe();
+
+</script>
+
+</body>
+</html>
