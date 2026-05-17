@@ -475,12 +475,10 @@ atendidos.innerHTML = "";
 
 data.forEach(pedido => {
 
-if(
-!pedido.status ||
-String(pedido.status)
+pedido.status =
+String(pedido.status || "PENDENTE")
 .toUpperCase()
-.trim() === "PENDENTE"
-)
+.trim();
 
 const valor =
 calcularValor(pedido);
@@ -535,16 +533,12 @@ id="pedido_${pedido.id}">
 
 <div style="display:flex;gap:15px;flex-wrap:wrap;">
 
-if(
-String(pedido.status)
-.toUpperCase()
-.trim() === "ATENDIDO"
-)
+${pedido.status !== "ATENDIDO" ? `
 
 <button
 class="btn btnPrint"
 onclick="atenderPedido(${pedido.id})">
-IMPRIMIR
+ATENDER
 </button>
 
 ` : ""}
@@ -567,9 +561,7 @@ EXCLUIR
 
 `;
 
-if(
-pedido.status.toUpperCase() === "ATENDIDO"
-){
+if(pedido.status === "ATENDIDO"){
 atendidos.innerHTML += card;
 }else{
 pendentes.innerHTML += card;
