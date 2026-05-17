@@ -371,11 +371,25 @@ alert("Usuário ou senha inválidos");
 
 window.onload = () => {
 
-localStorage.removeItem("logado");
+const logado =
+localStorage.getItem("logado");
+
+if(logado === "sim"){
+
+document.getElementById("loginTela").style.display = "none";
+
+document.getElementById("painel").style.display = "flex";
+
+carregarPedidos();
+carregarDashboard();
+
+}else{
 
 document.getElementById("loginTela").style.display = "flex";
 
 document.getElementById("painel").style.display = "none";
+
+}
 
 };
 
