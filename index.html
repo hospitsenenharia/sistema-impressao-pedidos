@@ -128,10 +128,6 @@ border-radius:15px;
 border-left:8px solid #22c55e;
 }
 
-.card-dashboard h2{
-margin-bottom:10px;
-}
-
 .card-dashboard span{
 font-size:32px;
 font-weight:bold;
@@ -258,9 +254,7 @@ ENTRAR
 <div class="menu">
 
 <div class="logo">
-
 🖨️ PEDIDOS
-
 </div>
 
 <button onclick="abrirTela('dashboard')">
@@ -288,33 +282,18 @@ ENTRAR
 <div class="dashboard">
 
 <div class="card-dashboard">
-
 <h2>Vendas Hoje</h2>
-
-<span id="totalHoje">
-R$ 0,00
-</span>
-
+<span id="totalHoje">R$ 0,00</span>
 </div>
 
 <div class="card-dashboard">
-
 <h2>Vendas Semana</h2>
-
-<span id="totalSemana">
-R$ 0,00
-</span>
-
+<span id="totalSemana">R$ 0,00</span>
 </div>
 
 <div class="card-dashboard">
-
 <h2>Vendas Mês</h2>
-
-<span id="totalMes">
-R$ 0,00
-</span>
-
+<span id="totalMes">R$ 0,00</span>
 </div>
 
 </div>
@@ -367,19 +346,10 @@ document.getElementById("usuario").value;
 const senha =
 document.getElementById("senha").value;
 
-if(
-usuario === "admin"
-&&
-senha === "123456"
-){
+if(usuario === "admin" && senha === "123456"){
 
-document.getElementById(
-"loginTela"
-).style.display = "none";
-
-document.getElementById(
-"painel"
-).style.display = "block";
+document.getElementById("loginTela").style.display = "none";
+document.getElementById("painel").style.display = "block";
 
 carregarPedidos();
 carregarDashboard();
@@ -395,16 +365,12 @@ alert("Usuário ou senha inválidos");
 
 function abrirTela(id){
 
-document
-.querySelectorAll(".tela")
+document.querySelectorAll(".tela")
 .forEach(t => {
-
 t.classList.remove("ativa");
-
 });
 
-document
-.getElementById(id)
+document.getElementById(id)
 .classList.add("ativa");
 
 }
@@ -433,9 +399,7 @@ if(pedido.tamanho?.includes("350")){
 total += 24.90;
 }
 
-if(
-pedido.mix_talher?.includes("SIM")
-){
+if(pedido.mix_talher?.includes("SIM")){
 total += 0.75;
 }
 
@@ -476,8 +440,7 @@ if(pedido.status !== "ATENDIDO"){
 return;
 }
 
-const valor =
-calcularValor(pedido);
+const valor = calcularValor(pedido);
 
 const dataPedido =
 new Date(pedido.data_hora);
@@ -486,11 +449,7 @@ const diff =
 (agora - dataPedido)
 / (1000 * 60 * 60 * 24);
 
-if(
-dataPedido.toDateString()
-===
-agora.toDateString()
-){
+if(dataPedido.toDateString() === agora.toDateString()){
 hoje += valor;
 }
 
@@ -498,29 +457,19 @@ if(diff <= 7){
 semana += valor;
 }
 
-if(
-dataPedido.getMonth()
-===
-agora.getMonth()
-){
+if(dataPedido.getMonth() === agora.getMonth()){
 mes += valor;
 }
 
 });
 
-document.getElementById(
-"totalHoje"
-).innerText =
+document.getElementById("totalHoje").innerText =
 "R$ " + hoje.toFixed(2);
 
-document.getElementById(
-"totalSemana"
-).innerText =
+document.getElementById("totalSemana").innerText =
 "R$ " + semana.toFixed(2);
 
-document.getElementById(
-"totalMes"
-).innerText =
+document.getElementById("totalMes").innerText =
 "R$ " + mes.toFixed(2);
 
 if(window.graficoVendas){
@@ -528,9 +477,7 @@ window.graficoVendas.destroy();
 }
 
 const ctx =
-document.getElementById(
-"graficoPedidos"
-);
+document.getElementById("graficoPedidos");
 
 window.graficoVendas =
 new Chart(ctx, {
@@ -539,21 +486,13 @@ type:"bar",
 
 data:{
 
-labels:[
-"Hoje",
-"Semana",
-"Mês"
-],
+labels:["Hoje","Semana","Mês"],
 
 datasets:[{
 
 label:"Total de Vendas",
 
-data:[
-hoje,
-semana,
-mes
-],
+data:[hoje,semana,mes],
 
 borderWidth:1
 
@@ -580,14 +519,10 @@ ascending:false
 });
 
 const pendentes =
-document.getElementById(
-"pedidosPendentes"
-);
+document.getElementById("pedidosPendentes");
 
 const atendidosLista =
-document.getElementById(
-"pedidosAtendidosLista"
-);
+document.getElementById("pedidosAtendidosLista");
 
 pendentes.innerHTML = "";
 atendidosLista.innerHTML = "";
@@ -604,23 +539,19 @@ const card = `
 <div class="card">
 
 <h2>
-
-#${pedido.id}
-
--
-
-${pedido.nome || ""}
-
+#${pedido.id} - ${pedido.nome || ""}
 </h2>
 
 <div class="dataPedido">
-
 📅 ${pedido.data_hora || ""}
-
 </div>
 
 <div class="info">
 📍 ${pedido.local_entrega || ""}
+</div>
+
+<div class="info">
+🏠 ${pedido.endereco || ""}
 </div>
 
 <div class="info">
@@ -636,6 +567,18 @@ ${pedido.nome || ""}
 </div>
 
 <div class="info">
+🧂 ${pedido.molho || ""}
+</div>
+
+<div class="info">
+🍴 ${pedido.mix_talher || ""}
+</div>
+
+<div class="info">
+🍰 ${pedido.sobremesa || ""}
+</div>
+
+<div class="info">
 🥤 ${pedido.bebida || ""}
 </div>
 
@@ -644,9 +587,7 @@ ${pedido.nome || ""}
 </div>
 
 <div class="totalPedido">
-
 💰 R$ ${valor.toFixed(2)}
-
 </div>
 
 <button
@@ -674,19 +615,11 @@ class="itemAtendido"
 onclick='mostrarDetalhes(${JSON.stringify(pedido)})'>
 
 <div>
-
-<b>#${pedido.id}</b>
-
--
-
-${pedido.nome}
-
+<b>#${pedido.id}</b> - ${pedido.nome}
 </div>
 
 <div>
-
 ${pedido.data_hora || ""}
-
 </div>
 
 </div>
@@ -704,18 +637,12 @@ atendidosLista.innerHTML += item;
 function mostrarDetalhes(pedido){
 
 const detalhes =
-document.getElementById(
-"pedidoDetalhes"
-);
+document.getElementById("pedidoDetalhes");
 
-if(
-detalhes.dataset.id == pedido.id
-){
+if(detalhes.dataset.id == pedido.id){
 
 detalhes.innerHTML = "";
-
 detalhes.dataset.id = "";
-
 return;
 
 }
@@ -730,23 +657,19 @@ detalhes.innerHTML = `
 <div class="card atendido">
 
 <h2>
-
-#${pedido.id}
-
--
-
-${pedido.nome}
-
+#${pedido.id} - ${pedido.nome}
 </h2>
 
 <div class="dataPedido">
-
 📅 ${pedido.data_hora || ""}
-
 </div>
 
 <div class="info">
 📍 ${pedido.local_entrega || ""}
+</div>
+
+<div class="info">
+🏠 ${pedido.endereco || ""}
 </div>
 
 <div class="info">
@@ -762,6 +685,18 @@ ${pedido.nome}
 </div>
 
 <div class="info">
+🧂 ${pedido.molho || ""}
+</div>
+
+<div class="info">
+🍴 ${pedido.mix_talher || ""}
+</div>
+
+<div class="info">
+🍰 ${pedido.sobremesa || ""}
+</div>
+
+<div class="info">
 🥤 ${pedido.bebida || ""}
 </div>
 
@@ -770,9 +705,7 @@ ${pedido.nome}
 </div>
 
 <div class="totalPedido">
-
 💰 R$ ${valor.toFixed(2)}
-
 </div>
 
 <button
@@ -791,13 +724,8 @@ onclick="fecharDetalhes()">
 
 function fecharDetalhes(){
 
-document.getElementById(
-"pedidoDetalhes"
-).innerHTML = "";
-
-document.getElementById(
-"pedidoDetalhes"
-).dataset.id = "";
+document.getElementById("pedidoDetalhes").innerHTML = "";
+document.getElementById("pedidoDetalhes").dataset.id = "";
 
 }
 
@@ -805,8 +733,7 @@ function filtrarPedidos(){
 
 const termo =
 document.getElementById("pesquisa")
-.value
-.toLowerCase();
+.value.toLowerCase();
 
 document
 .querySelectorAll("#pedidosPendentes .card")
@@ -815,16 +742,10 @@ document
 const texto =
 card.innerText.toLowerCase();
 
-if(texto.includes(termo)){
-
-card.style.display = "block";
-
-}
-else{
-
-card.style.display = "none";
-
-}
+card.style.display =
+texto.includes(termo)
+? "block"
+: "none";
 
 });
 
@@ -835,8 +756,7 @@ function filtrarAtendidos(){
 const termo =
 document
 .getElementById("pesquisaAtendidos")
-.value
-.toLowerCase();
+.value.toLowerCase();
 
 document
 .querySelectorAll(".itemAtendido")
@@ -845,16 +765,10 @@ document
 const texto =
 card.innerText.toLowerCase();
 
-if(texto.includes(termo)){
-
-card.style.display = "flex";
-
-}
-else{
-
-card.style.display = "none";
-
-}
+card.style.display =
+texto.includes(termo)
+? "flex"
+: "none";
 
 });
 
@@ -890,13 +804,25 @@ Cliente: ${data.nome}<br><br>
 
 Data: ${data.data_hora}<br><br>
 
-Proteína: ${data.proteina}<br><br>
+Entrega: ${data.local_entrega}<br><br>
 
-Guarnições: ${data.guarnicoes}<br><br>
+Endereço: ${data.endereco || ""}<br><br>
 
-Bebida: ${data.bebida}<br><br>
+Tamanho: ${data.tamanho || ""}<br><br>
 
-Pagamento: ${data.forma_pagamento}<br><br>
+Proteína: ${data.proteina || ""}<br><br>
+
+Guarnições: ${data.guarnicoes || ""}<br><br>
+
+Molho: ${data.molho || ""}<br><br>
+
+Talher: ${data.mix_talher || ""}<br><br>
+
+Sobremesa: ${data.sobremesa || ""}<br><br>
+
+Bebida: ${data.bebida || ""}<br><br>
+
+Pagamento: ${data.forma_pagamento || ""}<br><br>
 
 <hr>
 
@@ -913,7 +839,6 @@ R$ ${total.toFixed(2)}
 window.onload = function(){
 
 window.print();
-
 window.close();
 
 }
@@ -945,8 +870,19 @@ carregarDashboard();
 
 }
 
+function tocarSom(){
+
+const audio = new Audio(
+"https://www.soundjay.com/buttons/sounds/button-3.mp3"
+);
+
+audio.play();
+
+}
+
 supabaseClient
 .channel("pedidos")
+
 .on(
 "postgres_changes",
 {
@@ -960,10 +896,29 @@ payload => {
 carregarPedidos();
 carregarDashboard();
 
+tocarSom();
+
 alert("NOVO PEDIDO RECEBIDO!");
 
 }
 )
+
+.on(
+"postgres_changes",
+{
+event:"UPDATE",
+schema:"public",
+table:"pedidos"
+},
+
+payload => {
+
+carregarPedidos();
+carregarDashboard();
+
+}
+)
+
 .subscribe();
 
 </script>
