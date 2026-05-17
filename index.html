@@ -475,9 +475,12 @@ atendidos.innerHTML = "";
 
 data.forEach(pedido => {
 
-if(!pedido.status){
-pedido.status = "PENDENTE";
-}
+if(
+!pedido.status ||
+String(pedido.status)
+.toUpperCase()
+.trim() === "PENDENTE"
+)
 
 const valor =
 calcularValor(pedido);
@@ -532,7 +535,11 @@ id="pedido_${pedido.id}">
 
 <div style="display:flex;gap:15px;flex-wrap:wrap;">
 
-${pedido.status.toUpperCase() !== "ATENDIDO" ? `
+if(
+String(pedido.status)
+.toUpperCase()
+.trim() === "ATENDIDO"
+)
 
 <button
 class="btn btnPrint"
