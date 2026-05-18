@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -261,6 +260,10 @@ ENTRAR
 ✅ Pedidos Atendidos
 </button>
 
+<button onclick="logout()">
+🚪 Sair
+</button>
+
 </div>
 
 </div>
@@ -302,14 +305,6 @@ Dashboard
 Pedidos a Atender
 </h1>
 
-<input
-type="text"
-class="pesquisa"
-id="pesquisaPendentes"
-placeholder="Pesquisar ID, nome ou data"
-onkeyup="filtrarPedidos('pendentes')"
->
-
 <div id="pedidosPendentes"></div>
 
 </div>
@@ -319,14 +314,6 @@ onkeyup="filtrarPedidos('pendentes')"
 <h1 style="font-size:50px;margin-bottom:20px;">
 Pedidos Atendidos
 </h1>
-
-<input
-type="text"
-class="pesquisa"
-id="pesquisaAtendidos"
-placeholder="Pesquisar ID, nome ou data"
-onkeyup="filtrarPedidos('atendidos')"
->
 
 <div id="pedidosAtendidos"></div>
 
@@ -340,7 +327,7 @@ onkeyup="filtrarPedidos('atendidos')"
 
 const supabaseClient = supabase.createClient(
 "https://iwvyptljwwdqmpixgpyc.supabase.co",
-"sb_publishable_UwCk5xuRDMSfXnzZjbMNvw_u_QaXulQ"
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3dnlwdGxqd3dkcW1waXhncHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3MTg1NTIsImV4cCI6MjA5NDI5NDU1Mn0.aTn3vvUc4kIcOidmVzVFcEY4F_E5EnRxcONd8cDtQyI"
 );
 
 function fazerLogin(){
@@ -351,7 +338,10 @@ document.getElementById("usuario").value;
 const senha =
 document.getElementById("senha").value;
 
-if(usuario === "admin" && senha === "123456"){
+if(
+usuario === "admin" &&
+senha === "sesc123"
+){
 
 localStorage.setItem("logado","sim");
 
@@ -370,6 +360,14 @@ alert("Usuário ou senha inválidos");
 
 }
 
+function logout(){
+
+localStorage.removeItem("logado");
+
+location.reload();
+
+}
+
 window.onload = () => {
 
 const logado =
@@ -383,12 +381,6 @@ document.getElementById("painel").style.display = "flex";
 
 carregarPedidos();
 carregarDashboard();
-
-}else{
-
-document.getElementById("loginTela").style.display = "flex";
-
-document.getElementById("painel").style.display = "none";
 
 }
 
@@ -426,8 +418,8 @@ total += 21.75;
 }
 
 if(
-pedido.mix_talher &&
-pedido.mix_talher.toUpperCase().includes("SIM")
+pedido.talher &&
+pedido.talher.toUpperCase().includes("SIM")
 ){
 total += 0.75;
 }
@@ -447,6 +439,73 @@ total += 6.50;
 }
 
 return total;
+
+}
+
+function imprimirPedido(pedido){
+
+const conteudo = `
+
+PEDIDO #${pedido.id}
+
+CLIENTE:
+${pedido.nome || ""}
+
+DATA:
+${pedido.data_hora || ""}
+
+ENTREGA:
+${pedido.local_entrega || ""}
+
+ENDEREÇO:
+${pedido.endereco || ""}
+
+EMBALAGEM:
+${pedido.tamanho || ""}
+
+PROTEÍNA:
+${pedido.proteina || ""}
+
+GUARNIÇÕES:
+${pedido.guarnicoes || ""}
+
+MOLHO:
+${pedido.molho || ""}
+
+MIX FOLHAS:
+${pedido.mix_folhas || ""}
+
+TALHER:
+${pedido.talher || ""}
+
+SOBREMESA:
+${pedido.sobremesa || ""}
+
+BEBIDA:
+${pedido.bebida || ""}
+
+PAGAMENTO:
+${pedido.pagamento || ""}
+`;
+
+const janela =
+window.open("","","width=400,height=700");
+
+janela.document.write(`
+
+<html>
+
+<body onload="window.print();window.close();">
+
+<pre style="font-size:18px;font-family:Arial">
+${conteudo}
+</pre>
+
+</body>
+
+</html>
+
+`);
 
 }
 
@@ -500,11 +559,9 @@ ${pedido.data_hora || ""}
 <div class="cardPedido"
 id="pedido_${pedido.id}">
 
-<h2>
-#${pedido.id} - ${pedido.nome || ""}
-</h2>
+<h2>#${pedido.id}</h2>
 
-<p>🗓️ ${pedido.data_hora || ""}</p>
+<p>👤 ${pedido.nome || ""}</p>
 
 <p>📍 ${pedido.local_entrega || ""}</p>
 
@@ -518,13 +575,15 @@ id="pedido_${pedido.id}">
 
 <p>🧂 ${pedido.molho || ""}</p>
 
-<p>🍴 ${pedido.mix_talher || ""}</p>
+<p>🥬 ${pedido.mix_folhas || ""}</p>
+
+<p>🍴 ${pedido.talher || ""}</p>
 
 <p>🍰 ${pedido.sobremesa || ""}</p>
 
 <p>🥤 ${pedido.bebida || ""}</p>
 
-<p>💳 ${pedido.forma_pagamento || ""}</p>
+<p>💳 ${pedido.pagamento || ""}</p>
 
 <h2 style="color:#22c55e;">
 💰 R$ ${valor.toFixed(2)}
@@ -537,16 +596,10 @@ ${pedido.status !== "ATENDIDO" ? `
 <button
 class="btn btnPrint"
 onclick="atenderPedido(${pedido.id})">
-ATENDER
+ATENDER E IMPRIMIR
 </button>
 
 ` : ""}
-
-<button
-class="btn btnEditar"
-onclick="editarPedido(${pedido.id})">
-EDITAR
-</button>
 
 <button
 class="btn btnExcluir"
@@ -570,6 +623,33 @@ pendentes.innerHTML += card;
 
 }
 
+async function atenderPedido(id){
+
+const { data } =
+await supabaseClient
+.from("pedidos")
+.select("*")
+.eq("id", id)
+.single();
+
+imprimirPedido(data);
+
+await supabaseClient
+.from("pedidos")
+.update({
+status:"ATENDIDO"
+})
+.eq("id", id);
+
+setTimeout(() => {
+
+carregarPedidos();
+carregarDashboard();
+
+},1000);
+
+}
+
 async function excluirPedido(id){
 
 const confirmar =
@@ -584,70 +664,6 @@ await supabaseClient
 
 carregarPedidos();
 carregarDashboard();
-
-}
-
-async function editarPedido(id){
-
-const novoNome =
-prompt("Novo nome do cliente:");
-
-if(!novoNome) return;
-
-await supabaseClient
-.from("pedidos")
-.update({
-nome: novoNome
-})
-.eq("id", id);
-
-carregarPedidos();
-carregarDashboard();
-
-}
-
-async function atenderPedido(id){
-
-await supabaseClient
-.from("pedidos")
-.update({
-status:"ATENDIDO"
-})
-.eq("id", id);
-
-carregarPedidos();
-carregarDashboard();
-
-}
-
-function filtrarPedidos(tipo){
-
-const valor =
-document.getElementById(
-tipo === "pendentes"
-? "pesquisaPendentes"
-: "pesquisaAtendidos"
-).value.toLowerCase();
-
-const cards =
-document.querySelectorAll(
-tipo === "pendentes"
-? "#pedidosPendentes .cardPedidoResumo"
-: "#pedidosAtendidos .cardPedidoResumo"
-);
-
-cards.forEach(card => {
-
-if(
-card.innerText.toLowerCase()
-.includes(valor)
-){
-card.style.display = "flex";
-}else{
-card.style.display = "none";
-}
-
-});
 
 }
 
@@ -669,33 +685,9 @@ data.forEach(pedido => {
 const valor =
 calcularValor(pedido);
 
-let dataPedido = new Date();
-
-if(pedido.created_at){
-dataPedido = new Date(pedido.created_at);
-}
-
-if(
-dataPedido.toDateString() ===
-agora.toDateString()
-){
 hoje += valor;
-}
-
-const diffDias =
-(agora - dataPedido) /
-(1000 * 60 * 60 * 24);
-
-if(diffDias <= 7){
 semana += valor;
-}
-
-if(
-dataPedido.getMonth() ===
-agora.getMonth()
-){
 mes += valor;
-}
 
 });
 
@@ -724,13 +716,7 @@ labels:["Hoje","Semana","Mês"],
 
 datasets:[{
 label:"Total de Vendas",
-data:[hoje,semana,mes],
-
-backgroundColor:[
-"#22c55e",
-"#3b82f6",
-"#f59e0b"
-]
+data:[hoje,semana,mes]
 }]
 },
 
@@ -741,6 +727,27 @@ responsive:true
 });
 
 }
+
+supabaseClient
+.channel("tempo-real")
+
+.on(
+"postgres_changes",
+{
+event:"*",
+schema:"public",
+table:"pedidos"
+},
+
+() => {
+
+carregarPedidos();
+carregarDashboard();
+
+}
+)
+
+.subscribe();
 
 setInterval(() => {
 
@@ -753,4 +760,3 @@ carregarDashboard();
 
 </body>
 </html>
-```
