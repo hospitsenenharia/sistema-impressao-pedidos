@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -230,8 +231,8 @@ font-weight:bold;
 
 <input type="password" id="senha" placeholder="Senha">
 
-<button onclick="fazerLogin()">ENTRAR</button>
-
+<button onclick="fazerLogin()">
+ENTRAR
 </button>
 
 </div>
@@ -396,9 +397,7 @@ document.getElementById("painel").style.display = "none";
 function abrirTela(id){
 
 document.querySelectorAll(".tela")
-.forEach(t => {
-t.classList.remove("ativa");
-});
+.forEach(t => t.classList.remove("ativa"));
 
 document.getElementById(id)
 .classList.add("ativa");
@@ -450,9 +449,6 @@ total += 6.50;
 return total;
 
 }
-
-```html
-<!-- SUBSTITUA SOMENTE A FUNÇÃO carregarPedidos() POR ESTA -->
 
 async function carregarPedidos(){
 
@@ -573,7 +569,6 @@ pendentes.innerHTML += card;
 });
 
 }
-```
 
 async function excluirPedido(id){
 
@@ -758,3 +753,4 @@ carregarDashboard();
 
 </body>
 </html>
+```
