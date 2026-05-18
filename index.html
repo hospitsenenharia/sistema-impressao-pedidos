@@ -305,6 +305,14 @@ Dashboard
 Pedidos a Atender
 </h1>
 
+<input
+type="text"
+id="pesquisaPendentes"
+class="pesquisa"
+placeholder="Pesquisar por nome, data ou ID"
+onkeyup="filtrarPedidos('pendentes')"
+>
+
 <div id="pedidosPendentes"></div>
 
 </div>
@@ -332,6 +340,10 @@ const supabaseClient = supabase.createClient(
 
 function fazerLogin(){
 
+sessionStorage.clear();
+
+localStorage.clear();
+
 const usuario =
 document.getElementById("usuario").value;
 
@@ -340,7 +352,7 @@ document.getElementById("senha").value;
 
 if(
 usuario === "admin" &&
-senha === "sesc123"
+senha === "123456"
 ){
 
 localStorage.setItem("logado","sim");
@@ -350,6 +362,7 @@ document.getElementById("loginTela").style.display = "none";
 document.getElementById("painel").style.display = "flex";
 
 carregarPedidos();
+
 carregarDashboard();
 
 }else{
@@ -362,16 +375,27 @@ alert("Usuário ou senha inválidos");
 
 function logout(){
 
-localStorage.removeItem("logado");
+localStorage.clear();
+
+sessionStorage.clear();
 
 location.reload();
 
 }
 
-window.onload = () => {
+function limparCache(){
 
-const logado =
-localStorage.getItem("logado");
+localStorage.clear();
+
+sessionStorage.clear();
+
+location.reload();
+
+}
+
+window.onload = function(){
+
+const logado = localStorage.getItem("logado");
 
 if(logado === "sim"){
 
@@ -379,10 +403,16 @@ document.getElementById("loginTela").style.display = "none";
 
 document.getElementById("painel").style.display = "flex";
 
-carregarPedidos();
-carregarDashboard();
+}else{
+
+document.getElementById("loginTela").style.display = "flex";
+
+document.getElementById("painel").style.display = "none";
 
 }
+
+carregarPedidos();
+carregarDashboard();
 
 };
 
@@ -444,62 +474,196 @@ return total;
 
 function imprimirPedido(pedido){
 
+const valor = calcularValor(pedido);
+
 const conteudo = `
 
+<div id="cupom">
+
+<div class="empresa">
+DIVINA SALADA
+</div>
+
+<div class="subtitulo">
 PEDIDO #${pedido.id}
+</div>
 
-CLIENTE:
+<hr>
+
+<div class="linha">
+<b>CLIENTE:</b><br>
 ${pedido.nome || ""}
+</div>
 
-DATA:
+<div class="linha">
+<b>DATA:</b><br>
 ${pedido.data_hora || ""}
+</div>
 
-ENTREGA:
+<div class="linha">
+<b>ENTREGA:</b><br>
 ${pedido.local_entrega || ""}
+</div>
 
-ENDEREÇO:
+<div class="linha">
+<b>ENDEREÇO:</b><br>
 ${pedido.endereco || ""}
+</div>
 
-EMBALAGEM:
+<hr>
+
+<div class="linha">
+<b>EMBALAGEM</b><br>
 ${pedido.tamanho || ""}
+</div>
 
-PROTEÍNA:
+<div class="linha">
+<b>PROTEÍNA</b><br>
 ${pedido.proteina || ""}
+</div>
 
-GUARNIÇÕES:
+<div class="linha">
+<b>GUARNIÇÕES</b><br>
 ${pedido.guarnicoes || ""}
+</div>
 
-MOLHO:
+<div class="linha">
+<b>MOLHO</b><br>
 ${pedido.molho || ""}
+</div>
 
-MIX FOLHAS:
+<div class="linha">
+<b>MIX FOLHAS</b><br>
 ${pedido.mix_folhas || ""}
+</div>
 
-TALHER:
-${pedido.talher || ""}
+${pedido.talher &&
+pedido.talher.toUpperCase().includes("SIM")
+? `
+<div class="linha">
+<b>TALHER (+ R$ 0,75)</b><br>
+${pedido.talher}
+</div>
+`
+: ""}
 
-SOBREMESA:
-${pedido.sobremesa || ""}
+${pedido.sobremesa &&
+!pedido.sobremesa.toUpperCase().includes("SEM")
+? `
+<div class="linha">
+<b>SOBREMESA (+ R$ 6,50)</b><br>
+${pedido.sobremesa}
+</div>
+`
+: ""}
 
-BEBIDA:
-${pedido.bebida || ""}
+${pedido.bebida &&
+!pedido.bebida.toUpperCase().includes("SEM")
+? `
+<div class="linha">
+<b>BEBIDA (+ R$ 6,50)</b><br>
+${pedido.bebida}
+</div>
+`
+: ""}
 
-PAGAMENTO:
+<div class="linha">
+<b>PAGAMENTO</b><br>
 ${pedido.pagamento || ""}
+</div>
+
+<hr>
+
+<div class="total">
+TOTAL<br>
+R$ ${valor.toFixed(2)}
+</div>
+
+<div class="rodape">
+DIVINA SALADA
+</div>
+
+</div>
+
 `;
 
-const janela =
-window.open("","","width=400,height=700");
+const janela = window.open("", "", "width=320,height=800");
 
 janela.document.write(`
 
 <html>
 
-<body onload="window.print();window.close();">
+<head>
 
-<pre style="font-size:18px;font-family:Arial">
+<title>IMPRESSÃO</title>
+
+<style>
+
+body{
+margin:0;
+padding:0;
+font-family:Arial;
+}
+
+#cupom{
+width:80mm;
+padding:5mm;
+font-size:20px;
+font-weight:bold;
+}
+
+.empresa{
+text-align:center;
+font-size:32px;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.subtitulo{
+text-align:center;
+font-size:24px;
+margin-bottom:10px;
+}
+
+.linha{
+margin-bottom:14px;
+word-wrap:break-word;
+}
+
+.total{
+text-align:center;
+font-size:34px;
+font-weight:bold;
+margin-top:20px;
+margin-bottom:20px;
+}
+
+.rodape{
+text-align:center;
+font-size:20px;
+margin-top:20px;
+}
+
+hr{
+border:2px dashed #000;
+margin:15px 0;
+}
+
+@media print{
+
+body{
+width:80mm;
+}
+
+}
+
+</style>
+
+</head>
+
+<body onload="window.print();setTimeout(()=>window.close(),500);">
+
 ${conteudo}
-</pre>
 
 </body>
 
@@ -543,7 +707,7 @@ calcularValor(pedido);
 
 const card = `
 
-<div class="cardPedidoResumo"
+<div class="cardPedidoResumo pedidoItem"
 onclick="togglePedido(${pedido.id})">
 
 <div>
@@ -602,6 +766,12 @@ ATENDER E IMPRIMIR
 ` : ""}
 
 <button
+class="btn btnEditar"
+onclick="reimprimirPedido(${pedido.id})">
+REIMPRIMIR
+</button>
+
+<button
 class="btn btnExcluir"
 onclick="excluirPedido(${pedido.id})">
 EXCLUIR
@@ -650,6 +820,27 @@ carregarDashboard();
 
 }
 
+async function reimprimirPedido(id){
+
+const { data, error } =
+await supabaseClient
+.from("pedidos")
+.select("*")
+.eq("id", id)
+.single();
+
+if(error){
+
+alert("Erro ao localizar pedido");
+
+return;
+
+}
+
+imprimirPedido(data);
+
+}
+
 async function excluirPedido(id){
 
 const confirmar =
@@ -666,7 +857,40 @@ carregarPedidos();
 carregarDashboard();
 
 }
+function filtrarPedidos(tipo){
 
+const valor =
+document.getElementById(
+tipo === "pendentes"
+? "pesquisaPendentes"
+: "pesquisaAtendidos"
+)
+.value
+.toLowerCase();
+
+const lista =
+tipo === "pendentes"
+? document.querySelectorAll("#pedidosPendentes .pedidoItem")
+: document.querySelectorAll("#pedidosAtendidos .pedidoItem");
+
+lista.forEach(item => {
+
+const texto =
+item.innerText.toLowerCase();
+
+if(texto.includes(valor)){
+
+item.style.display = "block";
+
+}else{
+
+item.style.display = "none";
+
+}
+
+});
+
+}
 async function carregarDashboard(){
 
 const { data } =
