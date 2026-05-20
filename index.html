@@ -424,7 +424,6 @@ onkeyup="filtrarPedidos('atendidos')"
 </div>
 
 </div>
-
 <script>
 
 const supabaseUrl = "https://iwvyptljwwdqmpixgpyc.supabase.co";
@@ -532,6 +531,8 @@ item.style.display = texto.includes(valor)
 
 }
 
+
+
 async function carregarDashboard(){
 
 const { data } = await client
@@ -609,7 +610,6 @@ totalSemana++;
 document.getElementById("totalSemana")
 .innerText = totalSemana;
 
-document.getElementById("totalSemana").innerText = data.length;
 document.getElementById("totalMes").innerText = totalMes;
 document.getElementById("totalPendentes").innerText = pendentes.length;
 document.getElementById("totalAtendidos").innerText = atendidos.length;
@@ -757,7 +757,11 @@ imprimirPedido(data);
 
 await client
 .from("pedidos")
-.update({ status:"ATENDIDO" })
+.update({
+
+status:"ATENDIDO"
+
+})
 .eq("id", id);
 
 carregarDashboard();
@@ -781,7 +785,6 @@ async function abrirPedido(id){
 const { data } =
 await client
 .from("pedidos")
-.select("*")
 .eq("id", id)
 .single();
 
@@ -1084,24 +1087,28 @@ const html = `
 <style>
 body{
 font-family:Arial;
-width:58mm;
-font-size:11px;
+width:80mm;
+font-size:14px;
 font-weight:bold;
+margin:0;
+padding:0;
 }
 
 .print{
-width:220px;
+width:76mm;
 padding:3mm;
+box-sizing:border-box;
+line-height:1.4;
 }
 
 h1{
-font-size:14px;
+font-size:20px;
 text-align:center;
 margin:0;
 }
 
 h2{
-font-size:13px;
+font-size:16px;
 text-align:center;
 margin:5px 0;
 }
@@ -1130,6 +1137,14 @@ SISTEMA DE IMPRESSÃO
 
 <h1>DIVINA SALADA</h1>
 <h2>PEDIDO #${pedido.id}</h2>
+
+<div style="
+text-align:center;
+font-size:12px;
+margin-top:5px;
+">
+${pedido.data_hora || ""}
+</div>
 
 <hr>
 
@@ -1215,9 +1230,15 @@ setInterval(()=>{
 
 const agora = new Date();
 
-document.getElementById("relogio")
-.innerText =
+const relogio =
+document.getElementById("relogio");
+
+if(relogio){
+
+relogio.innerText =
 agora.toLocaleTimeString("pt-BR");
+
+}
 
 },1000);
 setInterval(carregarDashboard,5000);
