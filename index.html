@@ -1,236 +1,226 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-br">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIVINA SALADA</title>
 
-<title>SISTEMA DE IMPRESSÃO DE PEDIDOS</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 
-*{
+body{
 margin:0;
 padding:0;
-box-sizing:border-box;
 font-family:Arial;
+background:#f3f4f6;
 }
 
-body{
-background:#041330;
-color:#fff;
-display:flex;
+.login{
 height:100vh;
-overflow:hidden;
-}
-
-.sidebar{
-width:320px;
-background:#1b2945;
-padding:30px;
-}
-
-.logo{
-font-size:28px;
-font-weight:bold;
-margin-bottom:50px;
-}
-
-.menu button{
-width:100%;
-padding:18px;
-margin-bottom:20px;
-border:none;
-border-radius:10px;
-background:none;
-color:#fff;
-font-size:18px;
-cursor:pointer;
-text-align:left;
-}
-
-.menu button:hover{
-background:#25385d;
-}
-
-.conteudo{
-flex:1;
-padding:30px;
-overflow:auto;
-}
-
-.tela{
-display:none;
-}
-
-.tela.ativa{
-display:block;
-}
-
-.cards{
 display:flex;
-gap:20px;
-flex-wrap:wrap;
-margin-bottom:30px;
+justify-content:center;
+align-items:center;
 }
 
-.card{
-background:#1b2945;
+.box{
+background:white;
 padding:30px;
-border-radius:20px;
-flex:1;
-min-width:250px;
-border-left:10px solid #22c55e;
+border-radius:10px;
+width:320px;
+box-shadow:0 0 10px rgba(0,0,0,.1);
 }
 
-.card h2{
-font-size:28px;
-margin-bottom:10px;
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:1px solid #ccc;
+border-radius:8px;
+box-sizing:border-box;
 }
 
-.card span{
-font-size:40px;
+button{
+padding:10px 14px;
+border:none;
+border-radius:8px;
 font-weight:bold;
-color:#22c55e;
+cursor:pointer;
 }
 
-#graficoPedidos{
-background:#fff;
-padding:20px;
-border-radius:20px;
-max-height:400px;
+.btnLogin{
+width:100%;
+background:#22c55e;
+color:white;
+margin-top:15px;
 }
 
-.cardPedidoResumo{
-background:#1b2945;
-padding:20px;
-border-radius:15px;
-margin-bottom:15px;
+.topo{
+background:#16a34a;
+color:white;
+padding:15px;
 display:flex;
 justify-content:space-between;
-cursor:pointer;
-font-size:22px;
+align-items:center;
 }
 
-.cardPedido{
-display:none;
-background:#5b0000;
-padding:30px;
-border-radius:20px;
-margin-bottom:25px;
-border-left:12px solid red;
-font-size:24px;
+.container{
+padding:20px;
 }
 
-.cardPedido.ativo{
-display:block;
+.pesquisa{
+padding:12px;
+width:100%;
+margin-bottom:20px;
+border-radius:10px;
+border:1px solid #ccc;
 }
 
-.cardPedido h2{
-font-size:40px;
+.dashboard{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:15px;
 margin-bottom:20px;
 }
 
-.cardPedido p{
-margin-bottom:15px;
-line-height:1.5;
-}
-
-.btn{
-padding:15px 25px;
-border:none;
+.boxDash{
+background:white;
+padding:20px;
 border-radius:10px;
-font-size:18px;
+text-align:center;
+font-size:22px;
 font-weight:bold;
-cursor:pointer;
-color:#fff;
 }
 
-.btnPrint{
-background:#16a34a;
+.btnAtender{
+background:#22c55e;
+color:white;
+}
+
+.btnReimprimir{
+background:#2563eb;
+color:white;
 }
 
 .btnEditar{
-background:#2563eb;
+background:#f59e0b;
+color:white;
 }
 
 .btnExcluir{
 background:#dc2626;
+color:white;
 }
 
-.pesquisa{
+.tabelaPedidos{
 width:100%;
-padding:18px;
-border:none;
+border-collapse:collapse;
+background:white;
 border-radius:10px;
-font-size:20px;
-margin-bottom:25px;
+overflow:hidden;
+margin-bottom:30px;
 }
 
-.login{
-position:fixed;
-inset:0;
-background:#041330;
-display:flex;
-justify-content:center;
-align-items:center;
-z-index:9999;
+.tabelaPedidos th{
+background:#16a34a;
+color:white;
+padding:12px;
+font-size:14px;
 }
 
-.loginBox{
-background:#1b2945;
-padding:40px;
-border-radius:20px;
-width:350px;
+.tabelaPedidos td{
+padding:12px;
+border-bottom:1px solid #ddd;
+font-size:14px;
 }
 
-.loginBox h1{
-margin-bottom:25px;
-text-align:center;
-}
-
-.loginBox input{
-width:100%;
-padding:15px;
-margin-bottom:15px;
-border:none;
-border-radius:10px;
-font-size:18px;
-}
-
-.loginBox button{
-width:100%;
-padding:15px;
-border:none;
-border-radius:10px;
-background:#22c55e;
-color:#fff;
-font-size:18px;
+.tabelaPedidos tr:hover{
+background:#f3f4f6;
 cursor:pointer;
-font-weight:bold;
 }
+
+button:hover{
+opacity:.85;
+transform:scale(1.02);
+transition:.2s;
+}
+
+input:focus{
+outline:none;
+border:2px solid #22c55e;
+}
+
+@page{
+size:80mm auto;
+margin:0;
+}
+
+@media print {
+
+html,
+body{
+margin:0;
+padding:0;
+width:80mm;
+min-width:80mm;
+max-width:80mm;
+font-family:Arial;
+font-size:14px;
+zoom:2;
+background:white;
+}
+
+.print{
+width:76mm;
+padding:2mm;
+box-sizing:border-box;
+font-weight:bold;
+line-height:1.4;
+background:white;
+}
+
+h1{
+font-size:22px;
+text-align:center;
+margin:0;
+}
+
+h2{
+font-size:18px;
+text-align:center;
+margin:5px 0;
+}
+
+hr{
+border:none;
+border-top:2px dashed #000;
+margin:6px 0;
+}
+
+button{
+display:none;
+}
+
+}
+
+
+
+
 
 </style>
-
 </head>
-
 <body>
 
-<div class="login" id="loginTela">
+<div id="loginTela" class="login">
 
-<div class="loginBox">
+<div class="box">
 
-<h1>LOGIN</h1>
+<h2>DIVINA SALADA</h2>
 
 <input type="text" id="usuario" placeholder="Usuário">
-
 <input type="password" id="senha" placeholder="Senha">
 
-<button onclick="fazerLogin()">
+<button class="btnLogin" onclick="fazerLogin()">
 ENTRAR
 </button>
 
@@ -238,92 +228,196 @@ ENTRAR
 
 </div>
 
-<div id="painel" style="display:none;width:100%;height:100%;">
+<div id="painel" style="display:none;">
 
-<div class="sidebar">
-
-<div class="logo">
-🖨️ PEDIDOS
+<div class="topo">
+<h2>DIVINA SALADA</h2>
+<button onclick="logout()">SAIR</button>
 </div>
 
-<div class="menu">
+<div class="container">
 
-<button onclick="abrirTela('dashboard')">
-📊 Dashboard
+<div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+
+<button onclick="mostrarAba('dashboard')">
+DASHBOARD
 </button>
 
-<button onclick="abrirTela('pendentes')">
-📦 Pedidos a Atender
+<button onclick="mostrarAba('pendentes')">
+PEDIDOS A ATENDER
 </button>
 
-<button onclick="abrirTela('atendidos')">
-✅ Pedidos Atendidos
-</button>
-
-<button onclick="logout()">
-🚪 Sair
+<button onclick="mostrarAba('atendidos')">
+PEDIDOS ATENDIDOS
 </button>
 
 </div>
 
+<div id="abaDashboard">
+
+<div class="dashboard">
+
+<div class="boxDash">
+Hoje<br>
+<span id="totalHoje">0</span>
 </div>
 
-<div class="conteudo">
 
-<div id="dashboard" class="tela ativa">
-
-<h1 style="font-size:60px;margin-bottom:30px;">
-Dashboard
-</h1>
-
-<div class="cards">
-
-<div class="card">
-<h2>Vendas Hoje</h2>
-<span id="totalHoje">R$ 0.00</span>
+<div class="boxDash">
+Semana<br>
+<span id="totalSemana">0</span>
 </div>
 
-<div class="card">
-<h2>Vendas Semana</h2>
-<span id="totalSemana">R$ 0.00</span>
+<div class="boxDash">
+Mês<br>
+<span id="totalMes">0</span>
 </div>
 
-<div class="card">
-<h2>Vendas Mês</h2>
-<span id="totalMes">R$ 0.00</span>
+<div class="boxDash">
+Pendentes<br>
+<span id="totalPendentes">0</span>
+</div>
+
+<div class="boxDash">
+Atendidos<br>
+<span id="totalAtendidos">0</span>
 </div>
 
 </div>
 
-<canvas id="graficoPedidos"></canvas>
+<div style="
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+margin-top:20px;
+">
+
+<div style="
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 0 10px rgba(0,0,0,.08);
+">
+
+<h2>STATUS DA COZINHA</h2>
+
+<div
+id="statusCozinha"
+style="
+font-size:22px;
+font-weight:bold;
+margin-top:10px;
+"
+>
+🟢 Cozinha Livre
+</div>
+
+<br>
+
+<h2>ÚLTIMO PEDIDO</h2>
+
+<div
+id="ultimoPedido"
+style="
+font-size:18px;
+line-height:1.5;
+"
+>
+Nenhum
+</div>
 
 </div>
 
-<div id="pendentes" class="tela">
+<div style="
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 0 10px rgba(0,0,0,.08);
+">
 
-<h1 style="font-size:50px;margin-bottom:20px;">
-Pedidos a Atender
-</h1>
+<h2>RELÓGIO</h2>
+
+<div
+id="relogio"
+style="
+font-size:50px;
+font-weight:bold;
+"
+>
+00:00:00
+</div>
+
+<br>
+
+<h2>PRODUÇÃO DO DIA</h2>
+
+<div
+id="producaoDia"
+style="
+font-size:22px;
+font-weight:bold;
+"
+>
+0 pedidos
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="abaPendentes" style="display:none;">
+
+<h1>Pedidos a Atender</h1>
 
 <input
-type="text"
 id="pesquisaPendentes"
 class="pesquisa"
-placeholder="Pesquisar por nome, data ou ID"
+placeholder="Pesquisar por nome, sobrenome ou data"
 onkeyup="filtrarPedidos('pendentes')"
 >
 
-<div id="pedidosPendentes"></div>
+<table class="tabelaPedidos">
+<thead>
+<tr>
+<th>ID</th>
+<th>CLIENTE</th>
+<th>DATA</th>
+<th>LOCAL</th>
+<th>STATUS</th>
+<th>AÇÕES</th>
+</tr>
+</thead>
+<tbody id="pedidosPendentes"></tbody>
+</table>
 
 </div>
 
-<div id="atendidos" class="tela">
+<div id="abaAtendidos" style="display:none;">
 
-<h1 style="font-size:50px;margin-bottom:20px;">
-Pedidos Atendidos
-</h1>
+<h1>Pedidos Atendidos</h1>
 
-<div id="pedidosAtendidos"></div>
+<input
+id="pesquisaAtendidos"
+class="pesquisa"
+placeholder="Pesquisar por nome, sobrenome ou data"
+onkeyup="filtrarPedidos('atendidos')"
+>
+
+<table class="tabelaPedidos">
+<thead>
+<tr>
+<th>ID</th>
+<th>CLIENTE</th>
+<th>DATA</th>
+<th>LOCAL</th>
+<th>STATUS</th>
+<th>AÇÕES</th>
+</tr>
+</thead>
+<tbody id="pedidosAtendidos"></tbody>
+</table>
 
 </div>
 
@@ -333,16 +427,16 @@ Pedidos Atendidos
 
 <script>
 
-const supabaseClient = supabase.createClient(
-"https://iwvyptljwwdqmpixgpyc.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3dnlwdGxqd3dkcW1waXhncHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3MTg1NTIsImV4cCI6MjA5NDI5NDU1Mn0.aTn3vvUc4kIcOidmVzVFcEY4F_E5EnRxcONd8cDtQyI"
+const supabaseUrl = "https://iwvyptljwwdqmpixgpyc.supabase.co";
+
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3dnlwdGxqd3dkcW1waXhncHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3MTg1NTIsImV4cCI6MjA5NDI5NDU1Mn0.aTn3vvUc4kIcOidmVzVFcEY4F_E5EnRxcONd8cDtQyI";
+
+const client = window.supabase.createClient(
+supabaseUrl,
+supabaseKey
 );
 
 function fazerLogin(){
-
-sessionStorage.clear();
-
-localStorage.clear();
 
 const usuario =
 document.getElementById("usuario").value;
@@ -351,634 +445,782 @@ const senha =
 document.getElementById("senha").value;
 
 if(
-usuario === "admin" &&
-senha === "123456"
+usuario === "admin"
+&&
+senha === "12345678"
 ){
 
-localStorage.setItem("logado","sim");
+document.getElementById("loginTela")
+.style.display = "none";
 
-document.getElementById("loginTela").style.display = "none";
+document.getElementById("painel")
+.style.display = "block";
 
-document.getElementById("painel").style.display = "flex";
-
-carregarPedidos();
+mostrarAba("dashboard");
 
 carregarDashboard();
 
 }else{
 
-alert("Usuário ou senha inválidos");
+alert("Login inválido");
 
 }
 
 }
+
+
 
 function logout(){
 
-localStorage.clear();
-
-sessionStorage.clear();
-
 location.reload();
 
 }
 
-function limparCache(){
 
-localStorage.clear();
-
-sessionStorage.clear();
-
-location.reload();
-
-}
-
-window.onload = function(){
-
-const logado = localStorage.getItem("logado");
-
-if(logado === "sim"){
+function abrirSistema(){
 
 document.getElementById("loginTela").style.display = "none";
+document.getElementById("painel").style.display = "block";
 
-document.getElementById("painel").style.display = "flex";
-
-}else{
-
-document.getElementById("loginTela").style.display = "flex";
-
-document.getElementById("painel").style.display = "none";
-
-}
-
-carregarPedidos();
-carregarDashboard();
-
-};
-
-function abrirTela(id){
-
-document.querySelectorAll(".tela")
-.forEach(t => t.classList.remove("ativa"));
-
-document.getElementById(id)
-.classList.add("ativa");
-
-}
-
-function togglePedido(id){
-
-const pedido =
-document.getElementById(`pedido_${id}`);
-
-pedido.classList.toggle("ativo");
-
-}
-
-function calcularValor(pedido){
-
-let total = 0;
-
-if(pedido.tamanho?.includes("270")){
-total += 19.75;
-}
-
-if(pedido.tamanho?.includes("350")){
-total += 21.75;
-}
-
-if(
-pedido.talher &&
-pedido.talher.toUpperCase().includes("SIM")
-){
-total += 0.75;
-}
-
-if(
-pedido.sobremesa &&
-!pedido.sobremesa.toUpperCase().includes("SEM")
-){
-total += 6.50;
-}
-
-if(
-pedido.bebida &&
-!pedido.bebida.toUpperCase().includes("SEM")
-){
-total += 6.50;
-}
-
-return total;
-
-}
-
-function imprimirPedido(pedido){
-
-const valor = calcularValor(pedido);
-
-const conteudo = `
-
-<div id="cupom">
-
-<div class="empresa">
-DIVINA SALADA
-</div>
-
-<div class="subtitulo">
-PEDIDO #${pedido.id}
-</div>
-
-<hr>
-
-<div class="linha">
-<b>CLIENTE:</b><br>
-${pedido.nome || ""}
-</div>
-
-<div class="linha">
-<b>DATA:</b><br>
-${pedido.data_hora || ""}
-</div>
-
-<div class="linha">
-<b>ENTREGA:</b><br>
-${pedido.local_entrega || ""}
-</div>
-
-<div class="linha">
-<b>ENDEREÇO:</b><br>
-${pedido.endereco || ""}
-</div>
-
-<hr>
-
-<div class="linha">
-<b>EMBALAGEM</b><br>
-${pedido.tamanho || ""}
-</div>
-
-<div class="linha">
-<b>PROTEÍNA</b><br>
-${pedido.proteina || ""}
-</div>
-
-<div class="linha">
-<b>GUARNIÇÕES</b><br>
-${pedido.guarnicoes || ""}
-</div>
-
-<div class="linha">
-<b>MOLHO</b><br>
-${pedido.molho || ""}
-</div>
-
-<div class="linha">
-<b>MIX FOLHAS</b><br>
-${pedido.mix_folhas || ""}
-</div>
-
-${pedido.talher &&
-pedido.talher.toUpperCase().includes("SIM")
-? `
-<div class="linha">
-<b>TALHER (+ R$ 0,75)</b><br>
-${pedido.talher}
-</div>
-`
-: ""}
-
-${pedido.sobremesa &&
-!pedido.sobremesa.toUpperCase().includes("SEM")
-? `
-<div class="linha">
-<b>SOBREMESA (+ R$ 6,50)</b><br>
-${pedido.sobremesa}
-</div>
-`
-: ""}
-
-${pedido.bebida &&
-!pedido.bebida.toUpperCase().includes("SEM")
-? `
-<div class="linha">
-<b>BEBIDA (+ R$ 6,50)</b><br>
-${pedido.bebida}
-</div>
-`
-: ""}
-
-<div class="linha">
-<b>PAGAMENTO</b><br>
-${pedido.pagamento || ""}
-</div>
-
-<hr>
-
-<div class="total">
-TOTAL<br>
-R$ ${valor.toFixed(2)}
-</div>
-
-<div class="rodape">
-DIVINA SALADA
-</div>
-
-</div>
-
-`;
-
-const janela = window.open("", "", "width=320,height=800");
-
-janela.document.write(`
-
-<html>
-
-<head>
-
-<title>IMPRESSÃO</title>
-
-<style>
-
-body{
-margin:0;
-padding:0;
-font-family:Arial;
-}
-
-#cupom{
-width:80mm;
-padding:5mm;
-font-size:20px;
-font-weight:bold;
-}
-
-.empresa{
-text-align:center;
-font-size:32px;
-font-weight:bold;
-margin-bottom:10px;
-}
-
-.subtitulo{
-text-align:center;
-font-size:24px;
-margin-bottom:10px;
-}
-
-.linha{
-margin-bottom:14px;
-word-wrap:break-word;
-}
-
-.total{
-text-align:center;
-font-size:34px;
-font-weight:bold;
-margin-top:20px;
-margin-bottom:20px;
-}
-
-.rodape{
-text-align:center;
-font-size:20px;
-margin-top:20px;
-}
-
-hr{
-border:2px dashed #000;
-margin:15px 0;
-}
-
-@media print{
-
-body{
-width:80mm;
-}
-
-}
-
-</style>
-
-</head>
-
-<body onload="window.print();setTimeout(()=>window.close(),500);">
-
-${conteudo}
-
-</body>
-
-</html>
-
-`);
-
-}
-
-async function carregarPedidos(){
-
-const { data, error } =
-await supabaseClient
-.from("pedidos")
-.select("*")
-.order("id",{ascending:false});
-
-if(error){
-console.log(error);
-return;
-}
-
-const pendentes =
-document.getElementById("pedidosPendentes");
-
-const atendidos =
-document.getElementById("pedidosAtendidos");
-
-pendentes.innerHTML = "";
-atendidos.innerHTML = "";
-
-data.forEach(pedido => {
-
-pedido.status =
-String(pedido.status || "PENDENTE")
-.toUpperCase()
-.trim();
-
-const valor =
-calcularValor(pedido);
-
-const card = `
-
-<div class="cardPedidoResumo pedidoItem"
-onclick="togglePedido(${pedido.id})">
-
-<div>
-#${pedido.id} - ${pedido.nome || ""}
-</div>
-
-<div>
-${pedido.data_hora || ""}
-</div>
-
-</div>
-
-<div class="cardPedido"
-id="pedido_${pedido.id}">
-
-<h2>#${pedido.id}</h2>
-
-<p>👤 ${pedido.nome || ""}</p>
-
-<p>📍 ${pedido.local_entrega || ""}</p>
-
-<p>🏠 ${pedido.endereco || ""}</p>
-
-<p>🥗 ${pedido.tamanho || ""}</p>
-
-<p>🍖 ${pedido.proteina || ""}</p>
-
-<p>🥙 ${pedido.guarnicoes || ""}</p>
-
-<p>🧂 ${pedido.molho || ""}</p>
-
-<p>🥬 ${pedido.mix_folhas || ""}</p>
-
-<p>🍴 ${pedido.talher || ""}</p>
-
-<p>🍰 ${pedido.sobremesa || ""}</p>
-
-<p>🥤 ${pedido.bebida || ""}</p>
-
-<p>💳 ${pedido.pagamento || ""}</p>
-
-<h2 style="color:#22c55e;">
-💰 R$ ${valor.toFixed(2)}
-</h2>
-
-<div style="display:flex;gap:15px;flex-wrap:wrap;">
-
-${pedido.status !== "ATENDIDO" ? `
-
-<button
-class="btn btnPrint"
-onclick="atenderPedido(${pedido.id})">
-ATENDER E IMPRIMIR
-</button>
-
-` : ""}
-
-<button
-class="btn btnEditar"
-onclick="reimprimirPedido(${pedido.id})">
-REIMPRIMIR
-</button>
-
-<button
-class="btn btnExcluir"
-onclick="excluirPedido(${pedido.id})">
-EXCLUIR
-</button>
-
-</div>
-
-</div>
-
-`;
-
-if(pedido.status === "ATENDIDO"){
-atendidos.innerHTML += card;
-}else{
-pendentes.innerHTML += card;
-}
-
-});
-
-}
-
-async function atenderPedido(id){
-
-const { data } =
-await supabaseClient
-.from("pedidos")
-.select("*")
-.eq("id", id)
-.single();
-
-imprimirPedido(data);
-
-await supabaseClient
-.from("pedidos")
-.update({
-status:"ATENDIDO"
-})
-.eq("id", id);
-
-setTimeout(() => {
-
-carregarPedidos();
-carregarDashboard();
-
-},1000);
-
-}
-
-async function reimprimirPedido(id){
-
-const { data, error } =
-await supabaseClient
-.from("pedidos")
-.select("*")
-.eq("id", id)
-.single();
-
-if(error){
-
-alert("Erro ao localizar pedido");
-
-return;
-
-}
-
-imprimirPedido(data);
-
-}
-
-async function excluirPedido(id){
-
-const confirmar =
-confirm("Deseja excluir este pedido?");
-
-if(!confirmar) return;
-
-await supabaseClient
-.from("pedidos")
-.delete()
-.eq("id", id);
-
-carregarPedidos();
 carregarDashboard();
 
 }
+
+
+
+function mostrarAba(aba){
+
+document.getElementById("abaDashboard").style.display = "none";
+document.getElementById("abaPendentes").style.display = "none";
+document.getElementById("abaAtendidos").style.display = "none";
+
+if(aba === "dashboard"){
+document.getElementById("abaDashboard").style.display = "block";
+}
+
+if(aba === "pendentes"){
+document.getElementById("abaPendentes").style.display = "block";
+}
+
+if(aba === "atendidos"){
+document.getElementById("abaAtendidos").style.display = "block";
+}
+
+}
+
 function filtrarPedidos(tipo){
 
-const valor =
-document.getElementById(
+const valor = document.getElementById(
 tipo === "pendentes"
 ? "pesquisaPendentes"
 : "pesquisaAtendidos"
-)
-.value
-.toLowerCase();
+).value.toLowerCase();
 
-const lista =
-tipo === "pendentes"
+const lista = tipo === "pendentes"
 ? document.querySelectorAll("#pedidosPendentes .pedidoItem")
 : document.querySelectorAll("#pedidosAtendidos .pedidoItem");
 
 lista.forEach(item => {
 
-const texto =
-item.innerText.toLowerCase();
+const texto = item.innerText.toLowerCase();
 
-if(texto.includes(valor)){
+item.style.display = texto.includes(valor)
+? "table-row"
+: "none";
 
-item.style.display = "block";
+});
+
+}
+
+async function carregarDashboard(){
+
+const { data } = await client
+.from("pedidos")
+.select("*")
+.order("id", { ascending:false });
+
+const pendentes =
+data.filter(p => p.status !== "ATENDIDO");
+
+const atendidos =
+data.filter(p => p.status === "ATENDIDO");
+
+const hoje = new Date();
+
+const hojeTxt = hoje.toISOString().split("T")[0];
+
+let totalHoje = 0;
+let totalMes = 0;
+
+const mesAtual = hoje.getMonth()+1;
+const anoAtual = hoje.getFullYear();
+
+(data || []).forEach(p => {
+
+if(p.created_at){
+
+const dataPedido = new Date(p.created_at);
+
+const diaPedido = dataPedido.toISOString().split("T")[0];
+
+if(diaPedido === hojeTxt){
+totalHoje++;
+}
+
+if(
+(dataPedido.getMonth()+1) === mesAtual &&
+dataPedido.getFullYear() === anoAtual
+){
+
+totalMes++;
+
+}
+
+}
+
+});
+
+
+document.getElementById("totalHoje").innerText = totalHoje;
+
+const inicioSemana = new Date();
+
+inicioSemana.setDate(
+hoje.getDate() - hoje.getDay()
+);
+
+let totalSemana = 0;
+
+(data || []).forEach(p => {
+
+if(p.created_at){
+
+const dataPedido =
+new Date(p.created_at);
+
+if(dataPedido >= inicioSemana){
+totalSemana++;
+}
+
+}
+
+});
+
+document.getElementById("totalSemana")
+.innerText = totalSemana;
+
+document.getElementById("totalSemana").innerText = data.length;
+document.getElementById("totalMes").innerText = totalMes;
+document.getElementById("totalPendentes").innerText = pendentes.length;
+document.getElementById("totalAtendidos").innerText = atendidos.length;
+document.getElementById("producaoDia")
+.innerText =
+totalHoje + " pedidos";
+
+if(pendentes.length >= 10){
+
+document.getElementById("statusCozinha")
+.innerHTML =
+"🔴 Cozinha Lotada";
+
+}else if(pendentes.length >= 5){
+
+document.getElementById("statusCozinha")
+.innerHTML =
+"🟡 Movimento Alto";
 
 }else{
 
-item.style.display = "none";
+document.getElementById("statusCozinha")
+.innerHTML =
+"🟢 Cozinha Livre";
 
 }
+
+if(data.length > 0){
+
+const ultimo = data[0];
+
+document.getElementById("ultimoPedido")
+.innerHTML = `
+
+<b>${ultimo.nome}</b><br>
+${ultimo.proteina}<br>
+${ultimo.local_entrega}
+
+`;
+
+}
+
+renderizarPedidos(pendentes,"pedidosPendentes",false);
+renderizarPedidos(atendidos,"pedidosAtendidos",true);
+
+}
+
+function renderizarPedidos(lista, divId, atendido){
+
+const div = document.getElementById(divId);
+
+if(lista.length === 0){
+
+div.innerHTML = `
+<tr>
+<td colspan="6">
+Nenhum pedido.
+</td>
+</tr>
+`;
+
+return;
+
+}
+
+let html = "";
+
+lista.forEach(pedido => {
+
+html += `
+
+<tr
+class="pedidoItem"
+ondblclick="abrirPedido(${pedido.id})"
+>
+
+<td>${pedido.id}</td>
+
+<td>${pedido.nome}</td>
+
+<td>${pedido.data_hora}</td>
+
+<td>${pedido.local_entrega}</td>
+
+<td>
+${atendido ? "ATENDIDO" : "PENDENTE"}
+</td>
+
+<td style="display:flex;gap:5px;flex-wrap:wrap;">
+
+${!atendido ? `
+
+<button
+class="btnAtender"
+onclick="atenderPedido(${pedido.id})"
+>
+ATENDER
+</button>
+
+` : ""}
+
+<button
+class="btnReimprimir"
+onclick="reimprimirPedido(${pedido.id})"
+>
+REIMPRIMIR
+</button>
+
+<button
+class="btnEditar"
+onclick="editarPedido(${pedido.id})"
+>
+EDITAR
+</button>
+
+<button
+class="btnExcluir"
+onclick="excluirPedido(${pedido.id})"
+>
+EXCLUIR
+</button>
+
+</td>
+
+</tr>
+
+`;
 
 });
 
+
+div.innerHTML = html;
+
 }
-async function carregarDashboard(){
+
+async function atenderPedido(id){
+
+const { data } = await client
+.from("pedidos")
+.select("*")
+.eq("id", id)
+.single();
+
+imprimirPedido(data);
+
+await client
+.from("pedidos")
+.update({ status:"ATENDIDO" })
+.eq("id", id);
+
+carregarDashboard();
+
+}
+
+async function reimprimirPedido(id){
+
+const { data } = await client
+.from("pedidos")
+.select("*")
+.eq("id", id)
+.single();
+
+imprimirPedido(data);
+
+}
+
+async function abrirPedido(id){
 
 const { data } =
-await supabaseClient
+await client
 .from("pedidos")
-.select("*");
+.select("*")
+.eq("id", id)
+.single();
 
-let hoje = 0;
-let semana = 0;
-let mes = 0;
+alert(
+`
+PEDIDO #${data.id}
+
+CLIENTE:
+${data.nome}
+
+LOCAL:
+${data.local_entrega}
+
+ENDEREÇO:
+${data.endereco}
+
+EMBALAGEM:
+${data.tamanho}
+
+PROTEÍNA:
+${data.proteina}
+
+GUARNIÇÕES:
+${data.guarnicoes}
+
+MOLHO:
+${data.molho}
+
+MIX FOLHAS:
+${data.mix_folhas}
+
+TALHER:
+${data.talher}
+
+SOBREMESA:
+${data.sobremesa}
+
+BEBIDA:
+${data.bebida}
+
+PAGAMENTO:
+${data.pagamento}
+`
+);
+
+}
+
+async function editarPedido(id){
+
+const { data } = await client
+.from("pedidos")
+.select("*")
+.eq("id", id)
+.single();
+
+const html = `
+
+<div style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.6);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:9999;
+">
+
+<div style="
+background:white;
+padding:20px;
+border-radius:12px;
+width:500px;
+max-height:90vh;
+overflow:auto;
+">
+
+<h2>EDITAR PEDIDO #${data.id}</h2>
+
+<input
+id="edit_nome"
+value="${data.nome}"
+placeholder="Nome"
+style="margin-top:10px;width:100%;padding:10px;"
+>
+
+<input
+id="edit_local"
+value="${data.local_entrega}"
+placeholder="Local"
+style="margin-top:10px;width:100%;padding:10px;"
+>
+
+<input
+id="edit_tamanho"
+value="${data.tamanho}"
+placeholder="Embalagem"
+style="margin-top:10px;width:100%;padding:10px;"
+>
+
+<input
+id="edit_proteina"
+value="${data.proteina}"
+placeholder="Proteína"
+style="margin-top:10px;width:100%;padding:10px;"
+>
+
+<input
+id="edit_guarnicoes"
+value="${data.guarnicoes}"
+placeholder="Guarnições"
+style="margin-top:10px;width:100%;padding:10px;"
+>
+
+<input
+id="edit_molho"
+value="${data.molho}"
+placeholder="Molho"
+style="margin-top:10px;width:100%;padding:10px;"
+>
+
+<input
+id="edit_mix"
+value="${data.mix_folhas}"
+placeholder="Mix folhas"
+style="margin-top:10px;width:100%;padding:10px;"
+>
+
+<input
+id="edit_talher"
+value="${data.talher}"
+placeholder="Talher"
+style="margin-top:10px;width:100%;padding:10px;"
+>
+
+<input
+id="edit_sobremesa"
+value="${data.sobremesa}"
+placeholder="Sobremesa"
+style="margin-top:10px;width:100%;padding:10px;"
+>
+
+<input
+id="edit_bebida"
+value="${data.bebida}"
+placeholder="Bebida"
+style="margin-top:10px;width:100%;padding:10px;"
+>
+
+<input
+id="edit_pagamento"
+value="${data.pagamento}"
+placeholder="Pagamento"
+style="margin-top:10px;width:100%;padding:10px;"
+>
+
+<input
+id="edit_endereco"
+value="${data.endereco}"
+placeholder="Endereço"
+style="margin-top:10px;width:100%;padding:10px;"
+>
+
+<div style="
+display:flex;
+gap:10px;
+margin-top:20px;
+">
+
+<button
+style="
+background:#16a34a;
+color:white;
+flex:1;
+"
+onclick="salvarEdicao(${data.id})"
+>
+SALVAR
+</button>
+
+<button
+style="
+background:red;
+color:white;
+flex:1;
+"
+onclick="fecharModal()"
+>
+FECHAR
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+const div = document.createElement("div");
+
+div.id = "modalEditar";
+
+div.innerHTML = html;
+
+document.body.appendChild(div);
+
+}
+
+function fecharModal(){
+
+const modal =
+document.getElementById("modalEditar");
+
+if(modal){
+modal.remove();
+}
+
+}
+
+async function salvarEdicao(id){
+
+await client
+.from("pedidos")
+.update({
+
+nome:
+document.getElementById("edit_nome").value,
+
+local_entrega:
+document.getElementById("edit_local").value,
+
+tamanho:
+document.getElementById("edit_tamanho").value,
+
+proteina:
+document.getElementById("edit_proteina").value,
+
+guarnicoes:
+document.getElementById("edit_guarnicoes").value,
+
+molho:
+document.getElementById("edit_molho").value,
+
+mix_folhas:
+document.getElementById("edit_mix").value,
+
+talher:
+document.getElementById("edit_talher").value,
+
+sobremesa:
+document.getElementById("edit_sobremesa").value,
+
+bebida:
+document.getElementById("edit_bebida").value,
+
+pagamento:
+document.getElementById("edit_pagamento").value,
+
+endereco:
+document.getElementById("edit_endereco").value
+
+})
+.eq("id", id);
+
+alert("Pedido atualizado!");
+
+fecharModal();
+
+carregarDashboard();
+
+}
+
+async function excluirPedido(id){
+
+const confirma =
+confirm("Deseja excluir o pedido?");
+
+if(!confirma) return;
+
+await client
+.from("pedidos")
+.delete()
+.eq("id", id);
+
+alert("Pedido excluído!");
+
+carregarDashboard();
+
+}
+
+function imprimirPedido(pedido){
+
+const html = `
+
+<html>
+<head>
+<style>
+body{
+font-family:Arial;
+width:58mm;
+font-size:11px;
+font-weight:bold;
+}
+
+.print{
+width:220px;
+padding:3mm;
+}
+
+h1{
+font-size:14px;
+text-align:center;
+margin:0;
+}
+
+h2{
+font-size:13px;
+text-align:center;
+margin:5px 0;
+}
+
+hr{
+border:none;
+border-top:1px dashed #000;
+margin:5px 0;
+}
+
+.linha{
+margin-top:6px;
+}
+</style>
+</head>
+<body onload="setTimeout(()=>{window.print();window.close()},300)">
+<div class="print">
+ 
+<div style="
+text-align:center;
+font-size:10px;
+margin-bottom:3px;
+">
+SISTEMA DE IMPRESSÃO
+</div>    
+
+<h1>DIVINA SALADA</h1>
+<h2>PEDIDO #${pedido.id}</h2>
+
+<hr>
+
+<div class="linha">
+CLIENTE:<br>
+${pedido.nome}
+</div>
+
+<div class="linha">
+LOCAL:<br>
+${pedido.local_entrega}
+</div>
+
+<div class="linha">
+ENDEREÇO:<br>
+${pedido.endereco || "-"}
+</div>
+
+<div class="linha">
+EMBALAGEM:<br>
+${pedido.tamanho?.replace(/\(R\$.*?\)/g,'')}
+</div>
+
+<div class="linha">
+PROTEÍNA:<br>
+${pedido.proteina}
+</div>
+
+<div class="linha">
+GUARNIÇÕES:<br>
+${pedido.guarnicoes}
+</div>
+
+<div class="linha">
+MOLHO:<br>
+${pedido.molho}
+</div>
+
+<div class="linha">
+MIX FOLHAS:<br>
+${pedido.mix_folhas}
+</div>
+
+<div class="linha">
+TALHER:<br>
+${pedido.talher?.replace(/- R\$.*$/g,'')}
+</div>
+
+<div class="linha">
+SOBREMESA:<br>
+${pedido.sobremesa?.replace(/\(R\$.*?\)/g,'')}
+</div>
+
+<div class="linha">
+BEBIDA:<br>
+${pedido.bebida?.replace(/\(R\$.*?\)/g,'')}
+</div>
+
+<div class="linha">
+PAGAMENTO:<br>
+${pedido.pagamento}
+</div>
+
+<hr>
+
+</div>
+
+</body>
+</html>
+
+`;
+
+const win = window.open(
+"",
+"",
+"width=1600,height=1200"
+);
+win.document.write(html);
+win.document.close();
+
+}
+setInterval(()=>{
 
 const agora = new Date();
 
-data.forEach(pedido => {
+document.getElementById("relogio")
+.innerText =
+agora.toLocaleTimeString("pt-BR");
 
-const valor =
-calcularValor(pedido);
-
-hoje += valor;
-semana += valor;
-mes += valor;
-
-});
-
-document.getElementById("totalHoje").innerText =
-`R$ ${hoje.toFixed(2)}`;
-
-document.getElementById("totalSemana").innerText =
-`R$ ${semana.toFixed(2)}`;
-
-document.getElementById("totalMes").innerText =
-`R$ ${mes.toFixed(2)}`;
-
-if(window.graficoVendas){
-window.graficoVendas.destroy();
-}
-
-const ctx =
-document.getElementById("graficoPedidos");
-
-window.graficoVendas = new Chart(ctx,{
-
-type:"bar",
-
-data:{
-labels:["Hoje","Semana","Mês"],
-
-datasets:[{
-label:"Total de Vendas",
-data:[hoje,semana,mes]
-}]
-},
-
-options:{
-responsive:true
-}
-
-});
-
-}
-
-supabaseClient
-.channel("tempo-real")
-
-.on(
-"postgres_changes",
-{
-event:"*",
-schema:"public",
-table:"pedidos"
-},
-
-() => {
-
-carregarPedidos();
-carregarDashboard();
-
-}
-)
-
-.subscribe();
-
-setInterval(() => {
-
-carregarPedidos();
-carregarDashboard();
-
-},5000);
+},1000);
+setInterval(carregarDashboard,5000);
 
 </script>
 
