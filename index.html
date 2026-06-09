@@ -626,6 +626,22 @@ ATENDER
 ` : ""}
 
 <button
+class="btnEditar"
+onclick="editarPedido(${pedido.id})">
+
+EDITAR
+
+</button>
+
+<button
+class="btnReimprimir"
+onclick="imprimirPedido(${pedido.id})">
+
+${atendido ? "REIMPRIMIR" : "IMPRIMIR"}
+
+</button>
+
+<button
 class="btnExcluir"
 onclick="excluirPedido(${pedido.id})">
 
@@ -675,6 +691,156 @@ await client
 alert("Pedido excluído!");
 
 carregarDashboard();
+
+}
+async function editarPedido(id){
+
+const { data } = await client
+.from("pedidos")
+.select("*")
+.eq("id",id)
+.single();
+
+if(!data){
+alert("Pedido não encontrado");
+return;
+}
+
+const novoNome =
+prompt("Nome do cliente:", data.nome);
+
+if(novoNome === null) return;
+
+const novoLocal =
+prompt(
+"Local de entrega:",
+data.local_entrega
+);
+
+if(novoLocal === null) return;
+
+await client
+.from("pedidos")
+.update({
+nome: novoNome,
+local_entrega: novoLocal
+})
+.eq("id",id);
+
+alert("Pedido atualizado!");
+
+carregarDashboard();
+
+}
+
+async function imprimirPedido(id){
+
+const { data } = await client
+.from("pedidos")
+.select("*")
+.eq("id",id)
+.single();
+
+if(!data){
+alert("Pedido não encontrado");
+return;
+}
+
+const janela =
+window.open("","_blank");
+
+janela.document.write(`
+
+<html>
+
+<head>
+
+<title>Pedido ${data.id}</title>
+
+<style>
+
+@page{
+size:80mm auto;
+margin:3mm;
+}
+
+body{
+font-family:Arial;
+font-size:12px;
+width:72mm;
+margin:auto;
+}
+
+h2{
+text-align:center;
+}
+
+hr{
+border:none;
+border-top:1px dashed #000;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>DIVINA SALADA</h2>
+
+<hr>
+
+<b>PEDIDO:</b> ${data.id}<br>
+<b>CLIENTE:</b> ${data.nome}<br>
+<b>LOCAL:</b> ${data.local_entrega}<br>
+
+<hr>
+
+<b>EMBALAGEM:</b><br>
+${data.tamanho || ""}<br><br>
+
+<b>PROTEÍNA:</b><br>
+${data.proteina || ""}<br><br>
+
+<b>GUARNIÇÕES:</b><br>
+${data.guarnicoes || ""}<br><br>
+
+<b>MOLHO:</b><br>
+${data.molho || ""}<br><br>
+
+<b>MIX DE FOLHAS:</b><br>
+${data.mix_folhas || ""}<br><br>
+
+<b>TALHER:</b><br>
+${data.talher || ""}<br><br>
+
+<b>SOBREMESA:</b><br>
+${data.sobremesa || ""}<br><br>
+
+<b>BEBIDA:</b><br>
+${data.bebida || ""}<br><br>
+
+<hr>
+
+<b>PAGAMENTO:</b><br>
+${data.pagamento || ""}
+
+<hr>
+
+<b>STATUS:</b>
+${data.status}
+
+</body>
+
+</html>
+
+`);
+
+janela.document.close();
+
+setTimeout(()=>{
+janela.print();
+},500);
 
 }
 
