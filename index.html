@@ -709,18 +709,6 @@ alert("Pedido não encontrado");
 return;
 }
 
-async function editarPedido(id){
-
-const { data } = await client
-.from("pedidos")
-.select("*")
-.eq("id",id)
-.single();
-
-if(!data){
-alert("Pedido não encontrado");
-return;
-}
 
 const nome =
 prompt("Nome:", data.nome);
