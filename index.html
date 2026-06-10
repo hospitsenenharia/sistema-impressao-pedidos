@@ -95,19 +95,36 @@ margin-bottom:20px;
 
 .boxDash{
 background:white;
-padding:25px;
+padding:30px;
 border-radius:20px;
 text-align:center;
-font-size:28px;
-font-weight:bold;
-box-shadow:0 5px 20px rgba(0,0,0,.08);
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+border-top:6px solid #16a34a;
 transition:.3s;
 }
 
 .boxDash:hover{
-transform:translateY(-5px);
+transform:translateY(-8px);
+box-shadow:0 20px 40px rgba(0,0,0,.15);
 }
 
+.menuBtn{
+background:white;
+padding:15px 25px;
+border-radius:15px;
+border:2px solid #e5e7eb;
+font-size:16px;
+font-weight:bold;
+box-shadow:0 4px 12px rgba(0,0,0,.08);
+transition:.3s;
+}
+
+.menuBtn:hover{
+background:#16a34a;
+color:white;
+transform:translateY(-3px);
+}
+  
 .btnAtender{
 background:#22c55e;
 color:white;
@@ -233,15 +250,18 @@ margin-bottom:20px;
 flex-wrap:wrap;
 ">
 
-<button onclick="mostrarAba('dashboard')">
+<button class="menuBtn"
+onclick="mostrarAba('dashboard')">
 📊 DASHBOARD
 </button>
 
-<button onclick="mostrarAba('pendentes')">
+<button class="menuBtn"
+onclick="mostrarAba('pendentes')">
 🍽️ PEDIDOS
 </button>
 
-<button onclick="mostrarAba('atendidos')">
+<button class="menuBtn"
+onclick="mostrarAba('atendidos')">
 ✅ ATENDIDOS
 </button>
 
