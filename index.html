@@ -391,6 +391,76 @@ onkeyup="filtrarPedidos('atendidos')"
 
 </div>
 
+</div>
+
+<div id="modalEditar" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.6);
+justify-content:center;
+align-items:center;
+z-index:9999;
+">
+
+<div style="
+background:white;
+padding:25px;
+border-radius:15px;
+width:700px;
+max-height:90vh;
+overflow:auto;
+">
+
+<h2>✏️ Editar Pedido</h2>
+
+<input id="ed_nome" placeholder="Nome">
+
+<input id="ed_local" placeholder="Local">
+
+<input id="ed_tamanho" placeholder="Tamanho">
+
+<input id="ed_proteina" placeholder="Proteína">
+
+<input id="ed_guarnicoes" placeholder="Guarnições">
+
+<input id="ed_molho" placeholder="Molho">
+
+<input id="ed_mix" placeholder="Mix de Folhas">
+
+<input id="ed_talher" placeholder="Talher">
+
+<input id="ed_sobremesa" placeholder="Sobremesa">
+
+<input id="ed_bebida" placeholder="Bebida">
+
+<input id="ed_pagamento" placeholder="Pagamento">
+
+<input id="ed_endereco" placeholder="Endereço">
+
+<br><br>
+
+<button onclick="salvarEdicao()">
+💾 Salvar
+</button>
+
+<button onclick="
+document.getElementById('modalEditar').style.display='none'
+">
+❌ Cancelar
+</button>
+
+</div>
+
+</div>
+
+<script>
+  
+</div>
+
 <script>
 
 const supabaseUrl =
@@ -404,6 +474,8 @@ window.supabase.createClient(
 supabaseUrl,
 supabaseKey
 );
+
+let pedidoEditando = null;
 
 async function verificarLogin(){
 
@@ -739,6 +811,8 @@ carregarDashboard();
 }
 async function editarPedido(id){
 
+pedidoEditando = id;
+
 const { data } = await client
 .from("pedidos")
 .select("*")
@@ -750,66 +824,103 @@ alert("Pedido não encontrado");
 return;
 }
 
-const nome = prompt("Nome:", data.nome || "");
-if(nome === null) return;
+document.getElementById("ed_nome").value =
+data.nome || "";
 
-const local = prompt("Local:", data.local_entrega || "");
-if(local === null) return;
+document.getElementById("ed_local").value =
+data.local_entrega || "";
 
-const tamanho = prompt("Tamanho:", data.tamanho || "");
-if(tamanho === null) return;
+document.getElementById("ed_tamanho").value =
+data.tamanho || "";
 
-const proteina = prompt("Proteína:", data.proteina || "");
-if(proteina === null) return;
+document.getElementById("ed_proteina").value =
+data.proteina || "";
 
-const guarnicoes = prompt("Guarnições:", data.guarnicoes || "");
-if(guarnicoes === null) return;
+document.getElementById("ed_guarnicoes").value =
+data.guarnicoes || "";
 
-const molho = prompt("Molho:", data.molho || "");
-if(molho === null) return;
+document.getElementById("ed_molho").value =
+data.molho || "";
 
-const mix_folhas = prompt("Mix de Folhas:", data.mix_folhas || "");
-if(mix_folhas === null) return;
+document.getElementById("ed_mix").value =
+data.mix_folhas || "";
 
-const talher = prompt("Talher:", data.talher || "");
-if(talher === null) return;
+document.getElementById("ed_talher").value =
+data.talher || "";
 
-const sobremesa = prompt("Sobremesa:", data.sobremesa || "");
-if(sobremesa === null) return;
+document.getElementById("ed_sobremesa").value =
+data.sobremesa || "";
 
-const bebida = prompt("Bebida:", data.bebida || "");
-if(bebida === null) return;
+document.getElementById("ed_bebida").value =
+data.bebida || "";
 
-const pagamento = prompt("Pagamento:", data.pagamento || "");
-if(pagamento === null) return;
+document.getElementById("ed_pagamento").value =
+data.pagamento || "";
 
-const endereco = prompt("Endereço:", data.endereco || "");
-if(endereco === null) return;
+document.getElementById("ed_endereco").value =
+data.endereco || "";
+
+document.getElementById("modalEditar")
+.style.display = "flex";
+
+}
+
+  async function salvarEdicao(){
 
 await client
 .from("pedidos")
 .update({
-nome,
-local_entrega: local,
-tamanho,
-proteina,
-guarnicoes,
-molho,
-mix_folhas,
-talher,
-sobremesa,
-bebida,
-pagamento,
-endereco
-})
-.eq("id", id);
 
-alert("Pedido atualizado!");
+nome:
+document.getElementById("ed_nome").value,
+
+local_entrega:
+document.getElementById("ed_local").value,
+
+tamanho:
+document.getElementById("ed_tamanho").value,
+
+proteina:
+document.getElementById("ed_proteina").value,
+
+guarnicoes:
+document.getElementById("ed_guarnicoes").value,
+
+molho:
+document.getElementById("ed_molho").value,
+
+mix_folhas:
+document.getElementById("ed_mix").value,
+
+talher:
+document.getElementById("ed_talher").value,
+
+sobremesa:
+document.getElementById("ed_sobremesa").value,
+
+bebida:
+document.getElementById("ed_bebida").value,
+
+pagamento:
+document.getElementById("ed_pagamento").value,
+
+endereco:
+document.getElementById("ed_endereco").value
+
+})
+.eq("id", pedidoEditando);
+
+alert("Pedido atualizado com sucesso!");
+
+document.getElementById("modalEditar")
+.style.display = "none";
 
 carregarDashboard();
 
 }
 
+
+  
 async function imprimirPedido(id){
 
 const { data } = await client
