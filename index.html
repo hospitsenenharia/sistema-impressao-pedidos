@@ -709,42 +709,59 @@ alert("Pedido não encontrado");
 return;
 }
 
-
-const nome =
-prompt("Nome:", data.nome);
+const nome = prompt("Nome:", data.nome || "");
 if(nome === null) return;
 
-const local =
-prompt("Local:", data.local_entrega);
+const local = prompt("Local:", data.local_entrega || "");
 if(local === null) return;
 
-const proteina =
-prompt("Proteína:", data.proteina || "");
+const tamanho = prompt("Tamanho:", data.tamanho || "");
+if(tamanho === null) return;
+
+const proteina = prompt("Proteína:", data.proteina || "");
 if(proteina === null) return;
 
-const guarnicoes =
-prompt("Guarnições:", data.guarnicoes || "");
+const guarnicoes = prompt("Guarnições:", data.guarnicoes || "");
 if(guarnicoes === null) return;
 
-const molho =
-prompt("Molho:", data.molho || "");
+const molho = prompt("Molho:", data.molho || "");
 if(molho === null) return;
 
-const bebida =
-prompt("Bebida:", data.bebida || "");
+const mix_folhas = prompt("Mix de Folhas:", data.mix_folhas || "");
+if(mix_folhas === null) return;
+
+const talher = prompt("Talher:", data.talher || "");
+if(talher === null) return;
+
+const sobremesa = prompt("Sobremesa:", data.sobremesa || "");
+if(sobremesa === null) return;
+
+const bebida = prompt("Bebida:", data.bebida || "");
 if(bebida === null) return;
+
+const pagamento = prompt("Pagamento:", data.pagamento || "");
+if(pagamento === null) return;
+
+const endereco = prompt("Endereço:", data.endereco || "");
+if(endereco === null) return;
 
 await client
 .from("pedidos")
 .update({
-nome: nome,
+nome,
 local_entrega: local,
-proteina: proteina,
-guarnicoes: guarnicoes,
-molho: molho,
-bebida: bebida
+tamanho,
+proteina,
+guarnicoes,
+molho,
+mix_folhas,
+talher,
+sobremesa,
+bebida,
+pagamento,
+endereco
 })
-.eq("id",id);
+.eq("id", id);
 
 alert("Pedido atualizado!");
 
