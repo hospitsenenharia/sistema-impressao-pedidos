@@ -398,21 +398,27 @@ document.getElementById("senha").value;
 
 const { data, error } =
 await client.auth.signInWithPassword({
-  email: email,
-  password: senha
+
+email: email,
+password: senha
+
 });
+
+console.log("DATA:", data);
+console.log("ERROR:", error);
 
 if(error){
 
-  console.log(error);
+alert(
+"ERRO REAL:\n\n" +
+error.message
+);
 
-  alert(
-    "Erro: " +
-    error.message
-  );
+return;
 
-  return;
 }
+
+alert("Login realizado!");
 
 document.getElementById("loginTela")
 .style.display = "none";
