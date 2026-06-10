@@ -709,24 +709,52 @@ alert("Pedido não encontrado");
 return;
 }
 
-const novoNome =
-prompt("Nome do cliente:", data.nome);
+async function editarPedido(id){
 
-if(novoNome === null) return;
+const { data } = await client
+.from("pedidos")
+.select("*")
+.eq("id",id)
+.single();
 
-const novoLocal =
-prompt(
-"Local de entrega:",
-data.local_entrega
-);
+if(!data){
+alert("Pedido não encontrado");
+return;
+}
 
-if(novoLocal === null) return;
+const nome =
+prompt("Nome:", data.nome);
+if(nome === null) return;
+
+const local =
+prompt("Local:", data.local_entrega);
+if(local === null) return;
+
+const proteina =
+prompt("Proteína:", data.proteina || "");
+if(proteina === null) return;
+
+const guarnicoes =
+prompt("Guarnições:", data.guarnicoes || "");
+if(guarnicoes === null) return;
+
+const molho =
+prompt("Molho:", data.molho || "");
+if(molho === null) return;
+
+const bebida =
+prompt("Bebida:", data.bebida || "");
+if(bebida === null) return;
 
 await client
 .from("pedidos")
 .update({
-nome: novoNome,
-local_entrega: novoLocal
+nome: nome,
+local_entrega: local,
+proteina: proteina,
+guarnicoes: guarnicoes,
+molho: molho,
+bebida: bebida
 })
 .eq("id",id);
 
