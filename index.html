@@ -396,19 +396,22 @@ document.getElementById("usuario").value;
 const senha =
 document.getElementById("senha").value;
 
-const { error } =
+const { data, error } =
 await client.auth.signInWithPassword({
-
-email: email,
-password: senha
-
+  email: email,
+  password: senha
 });
 
 if(error){
 
-alert("Login inválido");
-return;
+  console.log(error);
 
+  alert(
+    "Erro: " +
+    error.message
+  );
+
+  return;
 }
 
 document.getElementById("loginTela")
