@@ -8,7 +8,6 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<h2>DIVINA SALADA</h2>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -25,14 +24,20 @@ height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
+background:linear-gradient(
+135deg,
+#16a34a,
+#22c55e,
+#4ade80
+);
 }
 
 .box{
 background:white;
-padding:30px;
-border-radius:10px;
-width:320px;
-box-shadow:0 0 10px rgba(0,0,0,.1);
+padding:40px;
+border-radius:20px;
+width:420px;
+box-shadow:0 20px 50px rgba(0,0,0,.15);
 }
 
 input{
@@ -90,11 +95,17 @@ margin-bottom:20px;
 
 .boxDash{
 background:white;
-padding:20px;
-border-radius:10px;
+padding:25px;
+border-radius:20px;
 text-align:center;
-font-size:22px;
+font-size:28px;
 font-weight:bold;
+box-shadow:0 5px 20px rgba(0,0,0,.08);
+transition:.3s;
+}
+
+.boxDash:hover{
+transform:translateY(-5px);
 }
 
 .btnAtender{
@@ -165,17 +176,24 @@ border:2px solid #22c55e;
 
 <div class="box">
 
+<div class="box">
+
+<div style="text-align:center">
+
+<h1>🥗</h1>
+
 <h2>DIVINA SALADA</h2>
+
+<p>
+Sistema de Gestão de Pedidos
+</p>
+
+</div>
 
 <input
 type="email"
 id="usuario"
 placeholder="E-mail">
-
-<input
-type="password"
-id="senha"
-placeholder="Senha">
 
 <button
 class="btnLogin"
@@ -213,15 +231,15 @@ flex-wrap:wrap;
 ">
 
 <button onclick="mostrarAba('dashboard')">
-DASHBOARD
+📊 DASHBOARD
 </button>
 
 <button onclick="mostrarAba('pendentes')">
-PEDIDOS A ATENDER
+🍽️ PEDIDOS
 </button>
 
 <button onclick="mostrarAba('atendidos')">
-PEDIDOS ATENDIDOS
+✅ ATENDIDOS
 </button>
 
 </div>
@@ -231,17 +249,17 @@ PEDIDOS ATENDIDOS
 <div class="dashboard">
 
 <div class="boxDash">
-Hoje<br>
+📋 Hoje<br>
 <span id="totalHoje">0</span>
 </div>
 
 <div class="boxDash">
-Pendentes<br>
+⏳ Pendentesdentes<br>
 <span id="totalPendentes">0</span>
 </div>
 
 <div class="boxDash">
-Atendidos<br>
+✅ Atendidos<br>
 <span id="totalAtendidos">0</span>
 </div>
 
