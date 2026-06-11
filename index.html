@@ -105,10 +105,16 @@ margin-bottom:20px;
 
 .cardRelatorio{
 background:white;
-padding:25px;
+padding:20px;
 border-radius:20px;
-margin-bottom:25px;
 box-shadow:0 5px 20px rgba(0,0,0,.08);
+}
+
+canvas{
+max-width:320px !important;
+max-height:320px !important;
+margin:auto;
+display:block;
 }
 
 .boxDash{
@@ -289,6 +295,11 @@ onclick="mostrarAba('historico')">
 📚 HISTÓRICO
 </button>
 
+<button class="menuBtn"
+onclick="mostrarAba('estatisticas')">
+📈 ESTATÍSTICAS
+</button>
+
 </div>
 
 <div id="abaDashboard">
@@ -461,6 +472,139 @@ onkeyup="filtrarPedidos('atendidos')"
 
 </div>
 
+<div id="abaEstatisticas" style="display:none;">
+
+<h1>📈 Estatísticas</h1>
+
+<div style="
+display:flex;
+flex-direction:column;
+gap:25px;
+">
+
+<div class="cardRelatorio">
+
+<h2>🍗 PROTEÍNA</h2>
+
+<p id="totalProteina">0 respostas</p>
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:20px;
+">
+
+<div style="width:35%;">
+<canvas id="graficoProteina"></canvas>
+</div>
+
+<div id="legendaProteina"
+style="
+width:45%;
+font-size:14px;
+line-height:1.8;
+">
+</div>
+
+</div>
+
+</div>
+
+<div class="cardRelatorio">
+
+<h2>🥤 BEBIDAS</h2>
+
+<p id="totalBebida">0 respostas</p>
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:30px;
+">
+
+<div style="width:45%;">
+<canvas id="graficoBebida"></canvas>
+</div>
+
+<div
+id="legendaBebida"
+style="
+width:45%;
+font-size:15px;
+line-height:2;
+">
+</div>
+
+</div>
+
+</div>
+
+<div class="cardRelatorio">
+
+<h2>💳 PAGAMENTOS</h2>
+
+<p id="totalPagamento">0 respostas</p>
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:30px;
+">
+
+<div style="width:45%;">
+<canvas id="graficoPagamento"></canvas>
+</div>
+
+<div
+id="legendaPagamento"
+style="
+width:45%;
+font-size:15px;
+line-height:2;
+">
+</div>
+
+</div>
+
+</div>
+
+<div class="cardRelatorio">
+
+<h2>📍 LOCAL DE ENTREGA</h2>
+
+<p id="totalLocal">0 respostas</p>
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:30px;
+">
+
+<div style="width:45%;">
+<canvas id="graficoLocal"></canvas>
+</div>
+
+<div
+id="legendaLocal"
+style="
+width:45%;
+font-size:15px;
+line-height:2;
+">
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 <div id="modalEditar" style="
 display:none;
 position:fixed;
@@ -612,18 +756,16 @@ location.reload();
 }
 
 function mostrarAba(aba){
- 
-document.getElementById("abaDashboard")
-.style.display = "none";
 
-document.getElementById("abaPendentes")
-.style.display = "none";
+document.getElementById("abaDashboard").style.display = "none";
 
-document.getElementById("abaAtendidos")
-.style.display = "none";
+document.getElementById("abaPendentes").style.display = "none";
 
-document.getElementById("abaHistorico")
-.style.display = "none";
+document.getElementById("abaAtendidos").style.display = "none";
+
+document.getElementById("abaHistorico").style.display = "none";
+
+document.getElementById("abaEstatisticas").style.display = "none";
 
 if(aba === "dashboard"){
 
@@ -640,12 +782,6 @@ document.getElementById("abaPendentes")
 
 }
 
-if(aba === "atendidos"){
-
-document.getElementById("abaAtendidos")
-.style.display = "block";
-
-}
 
 if(aba === "historico"){
 
@@ -653,6 +789,24 @@ document.getElementById("abaHistorico")
 .style.display = "block";
 
 carregarHistorico();
+
+}
+
+if(aba === "atendidos"){
+
+document.getElementById("abaAtendidos")
+.style.display = "block";
+
+}
+
+if(aba === "estatisticas"){
+
+document.getElementById("abaEstatisticas")
+.style.display = "block";
+
+carregarEstatisticas();
+
+
 
 }
 
@@ -1239,6 +1393,184 @@ janela.document.close();
 setTimeout(()=>{
 janela.print();
 },500);
+
+}
+async function carregarEstatisticas(){
+
+Chart.helpers.each(
+Chart.instances,
+function(instance){
+instance.destroy();
+}
+);
+
+const { data } = await client
+.from("pedidos")
+.select("*");
+
+if(!data || data.length === 0) return;
+
+const proteinas = {};
+const bebidas = {};
+const pagamentos = {};
+const locais = {};
+
+data.forEach(p => {
+
+proteinas[p.proteina || "Não informado"] =
+(proteinas[p.proteina || "Não informado"] || 0) + 1;
+
+bebidas[p.bebida || "Não informado"] =
+(bebidas[p.bebida || "Não informado"] || 0) + 1;
+
+pagamentos[p.pagamento || "Não informado"] =
+(pagamentos[p.pagamento || "Não informado"] || 0) + 1;
+
+locais[p.local_entrega || "Não informado"] =
+(locais[p.local_entrega || "Não informado"] || 0) + 1;
+
+});
+
+new Chart(
+document.getElementById("graficoProteina"),
+{
+type:"doughnut",
+
+data:{
+labels:Object.keys(proteinas),
+
+datasets:[{
+label:"Quantidade",
+data:Object.values(proteinas)
+}]
+},
+
+options:{
+responsive:true,
+plugins:{
+legend:{
+display:false
+}
+}
+}
+}
+);
+
+document.getElementById("totalProteina")
+.innerText = data.length + " respostas";
+
+document.getElementById("legendaProteina")
+.innerHTML =
+Object.entries(proteinas)
+.map(([nome,qtd]) =>
+`<b>${qtd}x</b> ${nome}<br>`
+)
+.join("<br>");
+
+new Chart(
+document.getElementById("graficoBebida"),
+{
+type:"doughnut",
+
+data:{
+labels:Object.keys(bebidas),
+datasets:[{
+data:Object.values(bebidas)
+}]
+},
+
+options:{
+plugins:{
+legend:{
+position:"bottom"
+}
+}
+}
+}
+);
+
+
+document.getElementById("totalBebida")
+.innerText = data.length + " respostas";
+
+document.getElementById("legendaBebida")
+.innerHTML =
+Object.entries(bebidas)
+.map(([nome,qtd]) =>
+`<b>${qtd}x</b> ${nome}`
+)
+.join("<br>");
+
+new Chart(
+document.getElementById("graficoPagamento"),
+{
+type:"doughnut",
+
+data:{
+labels:Object.keys(pagamentos),
+datasets:[{
+data:Object.values(pagamentos)
+}]
+},
+
+options:{
+plugins:{
+legend:{
+position:"bottom"
+}
+}
+}
+}
+);
+
+document.getElementById("totalPagamento")
+.innerText = data.length + " respostas";
+
+document.getElementById("legendaPagamento")
+.innerHTML =
+Object.entries(pagamentos)
+.map(([nome,qtd]) =>
+`<b>${qtd}x</b> ${nome}`
+)
+.join("<br>");
+
+
+
+
+new Chart(
+document.getElementById("graficoLocal"),
+{
+type:"doughnut",
+
+data:{
+labels:Object.keys(locais),
+datasets:[{
+data:Object.values(locais)
+}]
+},
+
+options:{
+plugins:{
+legend:{
+position:"bottom"
+}
+}
+}
+}
+);
+
+
+
+document.getElementById("totalLocal")
+.innerText = data.length + " respostas";
+
+document.getElementById("legendaLocal")
+.innerHTML =
+Object.entries(locais)
+.map(([nome,qtd]) =>
+`<b>${qtd}x</b> ${nome}`
+)
+.join("<br>");
 
 }
 
