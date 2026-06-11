@@ -291,14 +291,6 @@ onclick="mostrarAba('historico')">
 
 </div>
 
-<button
-class="menuBtn"
-onclick="mostrarAba('relatorios')">
-
-📈 RELATÓRIOS
-
-</button>
-
 <div id="abaDashboard">
 
  
@@ -355,13 +347,6 @@ Nenhum
 
 </div>
 
-<div id="abaRelatorios" style="display:none;">
-
-<h1>📈 Relatórios</h1>
-
-<div id="relatoriosContainer"></div>
-
-</div>
 
 <div id="abaPendentes" style="display:none;">
 
@@ -412,8 +397,10 @@ margin-bottom:20px;
 flex-wrap:wrap;
 ">
 
+<label>Data Inicial</label>
 <input type="date" id="dataInicial">
 
+<label>Data Final</label>
 <input type="date" id="dataFinal">
 
 <button onclick="carregarHistorico()">
@@ -626,9 +613,6 @@ location.reload();
 
 function mostrarAba(aba){
  
-document.getElementById("abaRelatorios")
-.style.display = "none";  
-
 document.getElementById("abaDashboard")
 .style.display = "none";
 
@@ -648,12 +632,6 @@ document.getElementById("abaDashboard")
 
 }
 
-if(aba=="relatorios"){
-document.getElementById("abaRelatorios")
-.style.display="block";
-
-carregarRelatorios();
-}
 
 if(aba === "pendentes"){
 
@@ -710,41 +688,65 @@ texto.includes(valor)
 
 }
 
-async function carregarRelatorios(){
-
-document.getElementById(
-"relatoriosContainer"
-).innerHTML = `
-
-<div class="cardRelatorio">
-<h2>📍 Local de Entrega</h2>
-<canvas id="graficoLocal"></canvas>
-</div>
-
-<div class="cardRelatorio">
-<h2>📦 Embalagem</h2>
-<canvas id="graficoEmbalagem"></canvas>
-</div>
-
-<div class="cardRelatorio">
-<h2>🍗 Proteína</h2>
-<canvas id="graficoProteina"></canvas>
-</div>
-
-`;
-
-}
 
 async function carregarHistorico(){
+
+const nome =
+document.getElementById("pesquisaHistorico")
+.value.toLowerCase();
+
+const dataInicial =
+document.getElementById("dataInicial").value;
+
+const dataFinal =
+document.getElementById("dataFinal").value;
 
 const { data } = await client
 .from("pedidos")
 .select("*")
 .order("id",{ascending:false});
 
+let pedidos = data || [];
+
+if(nome){
+
+pedidos = pedidos.filter(p =>
+(p.nome || "")
+.toLowerCase()
+.includes(nome)
+);
+
+}
+
+if(dataInicial){
+
+pedidos = pedidos.filter(p => {
+
+if(!p.criado_em) return false;
+
+return p.criado_em.substring(0,10)
+>= dataInicial;
+
+});
+
+}
+
+if(dataFinal){
+
+pedidos = pedidos.filter(p => {
+
+if(!p.criado_em) return false;
+
+return p.criado_em.substring(0,10)
+<= dataFinal;
+
+});
+
+}
+
 let html = "";
 
-data.forEach(pedido=>{
+pedidos.forEach(pedido=>{
 
 html += `
 
@@ -786,10 +788,38 @@ const pendentes =
 data.filter(p => p.status !== "ATENDIDO");
 
 const atendidos =
-data.filter(p => p.status === "ATENDIDO");
+data.filter(
+p => p.status === "ATENDIDO"
+);
 
 const hoje = new Date()
 .toLocaleDateString("pt-BR");
+
+const pendentesHoje =
+data.filter(p => {
+
+if(p.status === "ATENDIDO")
+return false;
+
+if(!p.data_hora)
+return false;
+
+return p.data_hora.includes(hoje);
+
+});
+
+const atendidosHoje =
+data.filter(p => {
+
+if(p.status !== "ATENDIDO")
+return false;
+
+if(!p.data_hora)
+return false;
+
+return p.data_hora.includes(hoje);
+
+});
 
 const pedidosHoje = data.filter(p => {
 
@@ -803,10 +833,10 @@ document.getElementById("totalHoje")
 .innerText = pedidosHoje.length;
 
 document.getElementById("totalPendentes")
-.innerText = pendentes.length;
+.innerText = pendentesHoje.length;
 
 document.getElementById("totalAtendidos")
-.innerText = atendidos.length;
+.innerText = atendidosHoje.length;
 
 if(pendentes.length >= 10){
 
