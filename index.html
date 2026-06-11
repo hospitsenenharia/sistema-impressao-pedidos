@@ -10,6 +10,8 @@ content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 
 body{
@@ -57,6 +59,13 @@ font-weight:bold;
 cursor:pointer;
 }
 
+.btnReimprimir,
+.btnEditar,
+.btnExcluir,
+.btnAtender{
+padding:6px 10px;
+font-size:12px;
+}
 .btnLogin{
 width:100%;
 background:#22c55e;
@@ -91,6 +100,15 @@ grid-template-columns:
 repeat(auto-fit,minmax(180px,1fr));
 gap:15px;
 margin-bottom:20px;
+}
+
+
+.cardRelatorio{
+background:white;
+padding:25px;
+border-radius:20px;
+margin-bottom:25px;
+box-shadow:0 5px 20px rgba(0,0,0,.08);
 }
 
 .boxDash{
@@ -183,6 +201,7 @@ outline:none;
 border:2px solid #22c55e;
 }
 
+
 </style>
 
 </head>
@@ -265,9 +284,24 @@ onclick="mostrarAba('atendidos')">
 ✅ ATENDIDOS
 </button>
 
+<button class="menuBtn"
+onclick="mostrarAba('historico')">
+📚 HISTÓRICO
+</button>
+
 </div>
 
+<button
+class="menuBtn"
+onclick="mostrarAba('relatorios')">
+
+📈 RELATÓRIOS
+
+</button>
+
 <div id="abaDashboard">
+
+ 
 
 <div class="dashboard">
 
@@ -321,6 +355,14 @@ Nenhum
 
 </div>
 
+<div id="abaRelatorios" style="display:none;">
+
+<h1>📈 Relatórios</h1>
+
+<div id="relatoriosContainer"></div>
+
+</div>
+
 <div id="abaPendentes" style="display:none;">
 
 <h1>Pedidos Pendentes</h1>
@@ -349,6 +391,51 @@ onkeyup="filtrarPedidos('pendentes')"
 </thead>
 
 <tbody id="pedidosPendentes"></tbody>
+
+</table>
+
+</div>
+
+<div id="abaHistorico" style="display:none;">
+
+<h1>📚 Histórico de Pedidos</h1>
+
+<input
+id="pesquisaHistorico"
+class="pesquisa"
+placeholder="Pesquisar cliente">
+
+<div style="
+display:flex;
+gap:10px;
+margin-bottom:20px;
+flex-wrap:wrap;
+">
+
+<input type="date" id="dataInicial">
+
+<input type="date" id="dataFinal">
+
+<button onclick="carregarHistorico()">
+🔍 Filtrar
+</button>
+
+</div>
+
+<table class="tabelaPedidos">
+
+<thead>
+
+<tr>
+<th>ID</th>
+<th>CLIENTE</th>
+<th>LOCAL</th>
+<th>STATUS</th>
+</tr>
+
+</thead>
+
+<tbody id="historicoPedidos"></tbody>
 
 </table>
 
@@ -384,12 +471,6 @@ onkeyup="filtrarPedidos('atendidos')"
 <tbody id="pedidosAtendidos"></tbody>
 
 </table>
-
-</div>
-
-</div>
-
-</div>
 
 </div>
 
@@ -544,6 +625,9 @@ location.reload();
 }
 
 function mostrarAba(aba){
+ 
+document.getElementById("abaRelatorios")
+.style.display = "none";  
 
 document.getElementById("abaDashboard")
 .style.display = "none";
@@ -554,11 +638,21 @@ document.getElementById("abaPendentes")
 document.getElementById("abaAtendidos")
 .style.display = "none";
 
+document.getElementById("abaHistorico")
+.style.display = "none";
+
 if(aba === "dashboard"){
 
 document.getElementById("abaDashboard")
 .style.display = "block";
 
+}
+
+if(aba=="relatorios"){
+document.getElementById("abaRelatorios")
+.style.display="block";
+
+carregarRelatorios();
 }
 
 if(aba === "pendentes"){
@@ -572,6 +666,15 @@ if(aba === "atendidos"){
 
 document.getElementById("abaAtendidos")
 .style.display = "block";
+
+}
+
+if(aba === "historico"){
+
+document.getElementById("abaHistorico")
+.style.display = "block";
+
+carregarHistorico();
 
 }
 
@@ -607,6 +710,69 @@ texto.includes(valor)
 
 }
 
+async function carregarRelatorios(){
+
+document.getElementById(
+"relatoriosContainer"
+).innerHTML = `
+
+<div class="cardRelatorio">
+<h2>📍 Local de Entrega</h2>
+<canvas id="graficoLocal"></canvas>
+</div>
+
+<div class="cardRelatorio">
+<h2>📦 Embalagem</h2>
+<canvas id="graficoEmbalagem"></canvas>
+</div>
+
+<div class="cardRelatorio">
+<h2>🍗 Proteína</h2>
+<canvas id="graficoProteina"></canvas>
+</div>
+
+`;
+
+}
+
+async function carregarHistorico(){
+
+const { data } = await client
+.from("pedidos")
+.select("*")
+.order("id",{ascending:false});
+
+let html = "";
+
+data.forEach(pedido=>{
+
+html += `
+
+<tr>
+
+<td>${pedido.id}</td>
+
+<td>
+${pedido.nome}<br>
+<small>${pedido.data_hora || ""}</small>
+</td>
+
+<td>${pedido.local_entrega || ""}</td>
+
+<td>${pedido.status || ""}</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById(
+"historicoPedidos"
+).innerHTML = html;
+
+}
+
 async function carregarDashboard(){
 
 const { data } = await client
@@ -622,8 +788,19 @@ data.filter(p => p.status !== "ATENDIDO");
 const atendidos =
 data.filter(p => p.status === "ATENDIDO");
 
+const hoje = new Date()
+.toLocaleDateString("pt-BR");
+
+const pedidosHoje = data.filter(p => {
+
+if(!p.data_hora) return false;
+
+return p.data_hora.includes(hoje);
+
+});
+
 document.getElementById("totalHoje")
-.innerText = data.length;
+.innerText = pedidosHoje.length;
 
 document.getElementById("totalPendentes")
 .innerText = pendentes.length;
@@ -647,6 +824,8 @@ document.getElementById("statusCozinha")
 .innerHTML = "🟢 Cozinha Livre";
 
 }
+
+
 
 if(data.length > 0){
 
@@ -674,7 +853,9 @@ atendidos,
 true
 );
 
+
 }
+
 
 function renderizarPedidos(
 lista,
@@ -711,7 +892,12 @@ html += `
 
 <td>${pedido.id}</td>
 
-<td>${pedido.nome}</td>
+<td>
+<b>${pedido.nome}</b><br>
+<small style="color:gray">
+📅 ${pedido.data_hora || ""}
+</small>
+</td>
 
 <td>${pedido.local_entrega}</td>
 
@@ -959,10 +1145,8 @@ h2{
 text-align:center;
 }
 
-hr{
-border:none;
-border-top:1px dashed #000;
-}
+
+
 
 </style>
 
